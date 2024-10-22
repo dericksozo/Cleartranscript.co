@@ -1,0 +1,28 @@
+{
+  "theme_color":"#ed5f6b",
+  "background_color":"#ffffff",
+  "icons":[
+     {
+        "purpose":"maskable",
+        "sizes":"512x512",
+        "src":"maskable-icon.png",
+        "type":"image/png"
+     },
+     {
+        "purpose":"any",
+        "sizes":"512x512",
+        "src":"maskable-icon.png",
+        "type":"image/png"
+     }
+  ],
+  "orientation":"portrait",
+  "display":"standalone",
+  "dir":"auto",
+  "lang":"en-US",
+  "start_url":"https://cleartranscript.web.app/",
+  "scope":"https://cleartranscript.web.app/",
+  "name":"Cleartranscript",
+  "short_name":"Cleartranscript",
+  "description":"Voice-to-Text Transcription App",
+  "id":"https://cleartranscript.co/"
+}

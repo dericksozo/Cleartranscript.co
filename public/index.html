@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cleartranscript.co - Voice-to-Text Transcription</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+
+    <meta name="theme-color" content="#ffffff">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192x192.png">
+
+    <style>
+        /* Reset and basic styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Space Grotesk', "Helvetica Neue", Arial, sans-serif;
+            background-color: #fff;
+            color: #000;
+        }
+
+        /* Hero Section */
+        .hero {
+            width: 100%;
+            background-color: #fff;
+            color: #000;
+            padding: 1rem 64px;
+            text-align: center;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 1rem;
+            text-align: left;
+            margin-bottom: 1rem;
+            float: left;
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(0, 0, 0, 0);
+            padding: 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            position: relative;
+            clear: both;
+        }
+
+        .upload-area.dragover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .upload-area input {
+            display: none;
+        }
+
+        .upload-area--uploading {
+            opacity: 1;
+            pointer-events: none;
+        }
+
+        .upload-area--uploading::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+            z-index: 1;
+        }
+
+        .upload-area--uploading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            margin: -20px 0 0 -20px;
+            border: 4px solid #000;
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            z-index: 2;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+
+        .record-button {
+            margin-left: auto;
+            margin-right: auto;
+            padding: 10px 20px;
+            background-color: #000;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .record-button.recording {
+            background-color: #000;
+            color: #fff;
+        }
+
+        .recording-indicator {
+            width: 10px;
+            height: 10px;
+            background-color: #fff;
+            border-radius: 2px;
+        }
+
+        /* Create Audio Label */
+        .create-audio-label {
+            font-size: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        /* Sections */
+        .sections {
+            padding: 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            color: #000;
+        }
+
+        .card p {
+            font-size: 0.95em;
+            color: #000;
+        }
+
+        .card .copy-card-button {
+            display: none;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 5px 10px;
+            background-color: #000;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .card:hover .copy-card-button {
+            display: block;
+        }
+
+        .copy-card-button:hover {
+            background-color: #444;
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 100%;
+            padding: 20px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-close {
+            display: none;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #000;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 15px;
+            color: #000;
+            float: left;
+        }
+
+        .modal-content .recording-date {
+            margin-bottom: 10px;
+            font-size: 0.9em;
+            color: #000;
+            clear: both;
+        }
+
+        .modal-content .transcript {
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+            line-height: 1.5;
+            color: #000;
+        }
+
+        .modal-content audio {
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .copy-button {
+            padding: 10px 15px;
+            background-color: #000;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+
+            float: right;
+        }
+
+        .copy-button:hover {
+            background-color: #444;
+        }
+
+        .copy-button.copied {
+            border: 2px solid green;
+            position: relative;
+        }
+
+        .copy-button.copied::before {
+            content: '✔';
+            color: green;
+            padding-right: 0.64rem;
+        }
+
+        .loading-indicator {
+            display: none;
+            float: right;
+            font-size: 0.8rem;
+            color: #000;
+            text-align: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .loading-indicator--show {
+            display: flex;
+        }
+
+        .loading-indicator::before {
+            position: relative;
+            display: block;
+            content: '';
+            width: 9px;
+            height: 9px;
+            border: 2px solid #000;
+            border-top: 2px solid #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            z-index: 2;
+
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .record-button {
+                width: 100%;
+            }
+
+            .hero {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        
+        <h1>ClearTranscript.co</h1>
+
+        <div class="loading-indicator" id="loading-indicator">Uploading audio...</div>
+
+        <div class="upload-area" id="upload-area">
+            <input type="file" id="file-input" accept="audio/*">
+            <button class="record-button" id="record-button">Record</button>
+            <p class="create-audio-label">Drag & Drop an Audio File Here or Click to Upload</p>
+        </div>
+    </div>
+
+    <!-- Sections -->
+    <div class="sections">
+        <div class="section" id="today-section">
+            <h2>Today</h2>
+            <div class="cards" id="today-cards">
+                <!-- Recording cards will be inserted here -->
+            </div>
+        </div>
+        <div class="section" id="yesterday-section">
+            <h2>Yesterday</h2>
+            <div class="cards" id="yesterday-cards">
+                <!-- Recording cards will be inserted here -->
+            </div>
+        </div>
+        <div class="section" id="all-section">
+            <h2>All</h2>
+            <div class="cards" id="all-cards">
+                <!-- Recording cards will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <span class="modal-close" id="modal-close">&times;</span>
+            <h3 id="modal-title">Transcript Title</h3>
+            <button class="copy-button" id="copy-button">Copy</button>
+            <div class="recording-date" id="recording-date">Recorded on: 10/24/2024 10:24</div>
+            <audio controls id="modal-audio">
+                <source src="" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            <div class="transcript" id="modal-transcript">Full transcript goes here...</div>
+        </div>
+    </div>
+
+    <!-- Firebase Back-end -->
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+        import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
+        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+      
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+          apiKey: "AIzaSyAjgvWtdisbgLpi9WoEq2EvgO10B-to5iA",
+          authDomain: "cleartranscript.firebaseapp.com",
+          projectId: "cleartranscript",
+          storageBucket: "cleartranscript.appspot.com",
+          messagingSenderId: "754135977375",
+          appId: "1:754135977375:web:214c797ea28c33ed1ac1aa",
+          measurementId: "G-Q260ZSD5ED"
+        };
+      
+        // Initialize Firebase
+
+        const app = initializeApp(firebaseConfig);
+        const storage = getStorage(app);
+        const db = getFirestore(app);
+
+        
+
+        /* Uploads an audio file to firebase storage and returns the download URL. */
+        function uploadAudio(file) {
+            return new Promise((resolve, reject) => {
+                if (!file) {
+                    reject("No file provided");
+                    return;
+                }
+                
+                // Generate a unique filename
+                const timestamp = Date.now();
+                let randomString1 = Math.random().toString(36).substring(2, 8);
+                let randomString2 = Math.random().toString(36).substring(2, 8);
+                const uniqueFileName = `audio_${timestamp}_${randomString1}_${randomString2}`;
+
+                // Create a reference to Firebase Storage with the unique filename
+                const storageRef = ref(storage, `audio/${uniqueFileName}`);
+
+                // Start the file upload
+                const uploadTask = uploadBytesResumable(storageRef, file);
+                
+                // Listen for state changes, errors, and completion
+                uploadTask.on('state_changed', 
+                    (snapshot) => {
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        console.log(`Upload is ${progress}% done`);
+                    }, 
+                    (error) => {
+                        reject(error);
+                    }, 
+                    () => {
+                        // Get the download URL after successful upload
+                        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                            resolve(downloadURL);
+                        }).catch(reject);
+                    }
+                );
+            });
+        };
+
+        
+        /* Converts an audio file to a transcript using Lemonfox's APIs. */
+        function processTranscript(audioURL) {
+            return new Promise((resolve, reject) => {
+                const body = new FormData();
+                body.append('file', audioURL);
+                // instead of providing a URL you can also upload a file object:
+                // body.append('file', new Blob([await fs.readFile('/path/to/audio.mp3')]));
+                body.append('language', 'english');
+                body.append('response_format', 'json');
+
+                fetch('https://api.lemonfox.ai/v1/audio/transcriptions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer gDnJKRB8hJyh1VPTIUgIAAWD9PrjB6p9'
+                    },
+                    body: body
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data['text']);
+                    resolve(data['text']);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    reject(error);
+                });
+            });
+        };
+        
+
+        /* Get all the recordings from the firestore database. */
+        function getRecordingsFromDB() {
+            return new Promise(async (resolve, reject) => {
+                const querySnapshot = await getDocs(collection(db, "recordings"));
+
+                console.log("querySnapshot", querySnapshot);
+                const dataArray = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                console.log("dataArray", dataArray);
+                resolve(dataArray);
+
+                // querySnapshot.forEach((doc) => {
+                //     console.log("What's the doc?", doc);
+                //     console.log(`${doc.id} => ${doc.data()}`);
+                // });
+
+            });
+        };
+
+        function saveRecordingToDB(recording) {
+            return new Promise(async (resolve, reject) => {
+                const docRef = await addDoc(collection(db, "recordings"), recording);
+                console.log("Document written with ID: ", docRef.id);
+                resolve(docRef.id);
+            });
+        }
+
+        window.app = {
+            uploadAudio,
+            processTranscript,
+            getRecordingsFromDB,
+            saveRecordingToDB
+        };
+
+        window.dispatchEvent(new Event('firebaseReady'));
+
+    </script>
+
+    <script>
+        // JavaScript Code
+
+        // console.log("storageRef", storageRef);
+
+        // Elements
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('file-input');
+        const recordButton = document.getElementById('record-button');
+        const todayCards = document.getElementById('today-cards');
+        const yesterdayCards = document.getElementById('yesterday-cards');
+        const allCards = document.getElementById('all-cards');
+        const modal = document.getElementById('modal');
+        const modalClose = document.getElementById('modal-close');
+        const modalTitle = document.getElementById('modal-title');
+        const recordingDate = document.getElementById('recording-date');
+        const modalTranscript = document.getElementById('modal-transcript');
+        const modalAudio = document.getElementById('modal-audio');
+        const copyButton = document.getElementById('copy-button');
+        const loadingIndicator = document.getElementById('loading-indicator');
+
+        // State
+        let recordings = []; // Array to store recording objects
+        let isRecording = false;
+        let mediaRecorder;
+        let recordedChunks = [];
+        let recordingStartTime;
+        let recordingInterval;
+
+        // Mock JSON Data
+        const mockData = [
+            {
+                "title": "Project Kickoff Meeting",
+                "transcript": "Today we discussed the initial project requirements and set up the timeline for the first phase. Everyone is excited to get started and has clear responsibilities...",
+                "audioURL": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+                "date": new Date().toISOString() // Today
+            },
+            {
+                "title": "Client Feedback Session",
+                "transcript": "Yesterday, the client provided feedback on the latest prototype. They are pleased with the design but have requested additional features for the dashboard...",
+                "audioURL": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+                "date": new Date(new Date().setDate(new Date().getDate() - 1)).toISOString() // Yesterday
+            },
+            {
+                "title": "Team Standup",
+                "transcript": "In yesterday's standup, team members shared their progress and blockers. The development team is on track, while the design team needs more time to finalize the mockups...",
+                "audioURL": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+                "date": new Date(new Date().setDate(new Date().getDate() - 1)).toISOString() // Yesterday
+            },
+            {
+                "title": "Weekly Review",
+                "transcript": "All week, we focused on integrating the new API endpoints. The testing phase revealed a few bugs that are now being addressed. Overall, significant progress has been made...",
+                "audioURL": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+                "date": new Date().toISOString() // Today
+            },
+            {
+                "title": "Brainstorming Session",
+                "transcript": "During the brainstorming session, ideas were generated for the upcoming marketing campaign. Strategies include social media outreach, influencer partnerships, and targeted ads...",
+                "audioURL": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
+                "date": new Date(new Date().setDate(new Date().getDate() - 2)).toISOString() // Two days ago
+            }
+        ];
+
+        window.addEventListener('firebaseReady', async function () {
+            loadRecordings(await window.app.getRecordingsFromDB());
+        });
+
+        // Utility Functions
+        function generateTitle(transcript) {
+            if (transcript) {
+                return transcript;
+            } else {
+                return "New Recording";
+            }
+        }
+
+        function formatDate(dateObject) {
+            // Check if the dateObject is a Firebase Timestamp
+            if (dateObject && dateObject.seconds) {
+                const date = new Date(dateObject.seconds * 1000); // Convert seconds to milliseconds
+                return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} · ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
+            } else if (dateObject instanceof Date) {
+                // If it's already a Date object, format it directly
+                return `${dateObject.getMonth() + 1}/${dateObject.getDate()}/${dateObject.getFullYear()} · ${dateObject.getHours()}:${dateObject.getMinutes().toString().padStart(2, '0')}`;
+            } else if (typeof dateObject === 'string') {
+                // If it's a string, parse it first
+                const date = new Date(dateObject);
+                return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} · ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
+            }
+            // Return a placeholder if the date is invalid
+            return 'Invalid Date';
+        }
+
+        /* Uploads an audio file (or blob) to Firebase Storage, generates a title, generates a transcript with LemonFox's API, and saves the recording to the recordings array. */
+        async function saveRecording(file) {
+            // Show loading indicator
+            loadingIndicator.style.display = 'flex';
+            uploadArea.classList.add('upload-area--uploading');
+
+            // Step 1: Upload the audio and get the audioURL
+            const audioURL = await window.app.uploadAudio(file);
+            console.log("What's the audioURL?", audioURL);
+
+            // Step 2: Push a new recording object into the recordings array, but without the transcript
+            const title = generateTitle(file.name);
+            const date = new Date().toISOString();
+
+            // Create a recording object without the transcript yet
+            const recording = { title, transcript: 'Processing transcript...', audioURL, date };
+            recordings.push(recording); // Push it to the recordings array
+
+            // Re-render UI immediately after adding the audio URL
+            renderRecordings();
+
+            // Step 3: Process the transcript (this may take time)
+            loadingIndicator.textContent = "Processing transcript...";
+            const transcript = await window.app.processTranscript(audioURL);
+            console.log("What's the transcript?", transcript);
+
+            // Step 4: Update the recording object with the transcript
+            recording.transcript = transcript; // Modify the object directly via reference
+
+            // Re-render the UI after updating the transcript
+            renderRecordings();
+
+            // Step 5: Open the modal so that the user clearly knows which is the new transcript.
+            openModal(0);
+
+            await window.app.saveRecordingToDB(recording);
+
+            // Step 6: Hide the loading indicator and remove the uploading class
+            uploadArea.classList.remove('upload-area--uploading');
+            loadingIndicator.style.display = 'none';
+
+        }
+
+        function loadRecordings(data) {
+            // Initialize recordings with mockData
+            recordings = data;
+
+            // Optionally, load additional recordings from localStorage
+            // const stored = localStorage.getItem('recordings');
+            // if (stored) {
+            //     const storedRecordings = JSON.parse(stored);
+            //     recordings = recordings.concat(storedRecordings);
+            // }
+
+            renderRecordings();
+        }
+
+        function renderRecordings() {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+
+            // Sort recordings by date, most recent first
+            recordings.sort((a, b) => {
+                const dateA = a.date && a.date.seconds ? new Date(a.date.seconds * 1000) : new Date(a.date);
+                const dateB = b.date && b.date.seconds ? new Date(b.date.seconds * 1000) : new Date(b.date);
+                return dateB - dateA;
+            });
+
+            // Group recordings by section
+            const sections = {
+                today: [],
+                yesterday: [],
+                all: []
+            };
+
+            recordings.forEach((rec, index) => {
+                const recDate = rec.date && rec.date.seconds 
+                    ? new Date(rec.date.seconds * 1000) 
+                    : new Date(rec.date);
+
+                if (recDate >= today) {
+                    sections.today.push({ rec, index });
+                } else if (recDate >= yesterday && recDate < today) {
+                    sections.yesterday.push({ rec, index });
+                } else {
+                    sections.all.push({ rec, index });
+                }
+            });
+
+            // Function to create a card
+            function createCard(rec, index) {
+                const card = document.createElement('div');
+                card.classList.add('card');
+                card.dataset.index = index;
+
+                const recDate = rec.date && rec.date.seconds 
+                    ? new Date(rec.date.seconds * 1000) 
+                    : new Date(rec.date);
+
+                card.innerHTML = `
+                    <h3>${rec.title}</h3>
+                    <p>${rec.transcript.length > 100 ? rec.transcript.substring(0, 100) + '...' : rec.transcript}</p>
+                    <span class="card-time">${formatTime(recDate)}</span>
+                    <button class="copy-card-button">Copy</button>
+                `;
+
+                const copyButton = card.querySelector('.copy-card-button');
+                copyButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    navigator.clipboard.writeText(rec.transcript).then(() => {
+                        copyButton.textContent = 'Copied!';
+                        setTimeout(() => copyButton.textContent = 'Copy', 1000);
+                    });
+                });
+
+                card.addEventListener('click', (event) => {
+                    if (!event.target.classList.contains('copy-card-button')) {
+                        openModal(index);
+                    }
+                });
+
+                return card;
+            }
+
+            // Function to update a section
+            function updateSection(sectionElement, sectionData) {
+                const fragment = document.createDocumentFragment();
+                sectionData.forEach(({ rec, index }) => {
+                    fragment.appendChild(createCard(rec, index));
+                });
+
+                // Only update DOM if content has changed
+                if (!sectionElement.firstChild || !fragment.isEqualNode(sectionElement.firstChild)) {
+                    sectionElement.innerHTML = '';
+                    sectionElement.appendChild(fragment);
+                }
+            }
+
+            // Update each section
+            updateSection(todayCards, sections.today);
+            updateSection(yesterdayCards, sections.yesterday);
+            updateSection(allCards, sections.all);
+        }
+
+        // Helper function to format time
+        function formatTime(date) {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+        }
+
+        function openModal(index) {
+            const rec = recordings[index];
+            modalTitle.textContent = rec.title;
+            recordingDate.textContent = formatDate(rec.date);
+            modalTranscript.textContent = rec.transcript;
+            modalAudio.src = rec.audioURL;
+            // Set the default playback speed to 1.75
+            modalAudio.playbackRate = 1.75;
+            modal.dataset.index = index;
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        // Drag and Drop Handlers
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            handleFiles(files);
+        });
+
+        // Click to Upload
+        // Removed event listener that opens file input dialog on click to prevent interference with record button.
+        
+        uploadArea.addEventListener('click', (e) => {
+            // Prevent opening file dialog when clicking the record button
+            if (e.target !== recordButton && !recordButton.contains(e.target)) {
+                fileInput.click();
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const files = e.target.files;
+            handleFiles(files);
+        });
+
+
+        function handleFiles(files) {
+            console.log("handleFiles", files);
+            
+            Array.from(files).forEach(async (file) => {
+
+                if (file.type.startsWith('audio/')) {
+                    saveRecording(file);
+                } else {
+                    alert('Only audio files are supported.');
+                }
+            });
+        }
+
+        // Recording Handlers
+        recordButton.addEventListener('click', () => {
+            if (!isRecording) {
+                startRecording();
+            } else {
+                stopRecording();
+            }
+        });
+
+        let wakeLock = null;
+
+        async function requestWakeLock() {
+            try {
+                wakeLock = await navigator.wakeLock.request('screen');
+                console.log('Wake Lock is active.');
+            } catch (err) {
+                console.error('Wake Lock request failed:', err);
+            }
+        }
+
+        function releaseWakeLock() {
+            if (wakeLock !== null) {
+                wakeLock.release()
+                    .then(() => {
+                        wakeLock = null;
+                        console.log('Wake Lock released.');
+                    })
+                    .catch((err) => console.error('Error releasing Wake Lock:', err));
+            }
+        }
+
+        async function startRecording() {
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                alert('Your browser does not support audio recording.');
+                return;
+            }
+
+            try {
+                await requestWakeLock();  // Request Wake Lock when recording starts
+                
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.start();
+                isRecording = true;
+                recordingStartTime = Date.now();
+                recordButton.classList.add('recording');
+                recordButton.innerHTML = '<div class="recording-indicator"></div> 0:00';
+                recordedChunks = [];
+
+                // Update recording time every second
+                recordingInterval = setInterval(() => {
+                    const elapsedSeconds = Math.floor((Date.now() - recordingStartTime) / 1000);
+                    const minutes = Math.floor(elapsedSeconds / 60);
+                    const seconds = elapsedSeconds % 60;
+                    recordButton.innerHTML = `<div class="recording-indicator"></div> ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                }, 1000);
+
+                mediaRecorder.ondataavailable = function(e) {
+                    if (e.data.size > 0) {
+                        recordedChunks.push(e.data);
+                    }
+                }
+
+                mediaRecorder.onstop = function() {
+                    loadingIndicator.style.display = 'flex';
+                    const blob = new Blob(recordedChunks, { type: 'audio/mp3' });
+                    saveRecording(blob);
+                    releaseWakeLock();  // Release Wake Lock when recording stops
+                }
+
+            } catch (err) {
+                console.error('Error accessing microphone:', err);
+                alert('Could not access your microphone.');
+                releaseWakeLock();  // Ensure Wake Lock is released on error
+            }
+        }
+
+        function stopRecording() {
+            mediaRecorder.stop();
+            isRecording = false;
+            clearInterval(recordingInterval);
+            recordButton.classList.remove('recording');
+            recordButton.textContent = 'Record';
+            releaseWakeLock();  // Release Wake Lock when recording stops
+        }
+
+
+        // Modal Handlers
+        modalClose.addEventListener('click', closeModal);
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Copy Transcript
+        copyButton.addEventListener('click', () => {
+            navigator.clipboard.writeText(modalTranscript.textContent).then(() => {
+                copyButton.classList.add('copied');
+                copyButton.textContent = 'Copied!';
+                setTimeout(() => {
+                    copyButton.classList.remove('copied');
+                    copyButton.textContent = 'Copy';
+                }, 1000);
+            }).catch(err => {
+                console.error('Could not copy text:', err);
+            });
+        });
+
+    </script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then((registration) => {
+                        console.log('Service Worker registered successfully:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
+
+</body>
+</html>
