@@ -8,11 +8,11 @@
 2. [x] **Transcript Text Length**
    - Increase the maximum length of the text displayed on the transcript card.
 
-3. **Copy Button Update**
+3. [x] **Copy Button Update**
    - Replace the current "Copy" text button with an icon.
    - Add a tooltip to the copy button (use CSS for implementation).
 
-4. **Copy Icon in Modal**
+4. [x] **Copy Icon in Modal**
    - Add the copy icon in the modal for the transcript, similar to how it is displayed on the main page cards.
 
 5. **Headers Display Logic**
