@@ -146,6 +146,10 @@
             margin-bottom: 40px;
         }
 
+        .section.section--hidden {
+            display: none;
+        }
+
         .section h2 {
             margin-bottom: 20px;
             font-size: 1rem;
@@ -194,6 +198,41 @@
 
         .card:hover .copy-card-button {
             display: block;
+        }
+
+        /* Card Loading Placeholder */
+        
+        .card-loading-placeholder {
+            background-color: #e6e4e4;
+            padding: 20px;
+            border-radius: 10px;
+            min-height: 200px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-loading-placeholder::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            transform: translateX(-100%);
+            background-image: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0) 0,
+                rgba(255, 255, 255, 0.2) 20%,
+                rgba(255, 255, 255, 0.5) 60%,
+                rgba(255, 255, 255, 0)
+            );
+            animation: shimmer 1s infinite;
+        }
+
+        @keyframes shimmer {
+            100% {
+                transform: translateX(100%);
+            }
         }
 
         /* Modal */
@@ -293,7 +332,7 @@
             pointer-events: none;
             white-space: nowrap;
         }
-        
+
         .copy-button:hover::after,
         .copy-button.copied::after {
             opacity: 1;
@@ -375,22 +414,38 @@
 
     <!-- Sections -->
     <div class="sections">
-        <div class="section" id="today-section">
+        <div class="section section--hidden" id="today-section">
             <h2>Today</h2>
             <div class="cards" id="today-cards">
                 <!-- Recording cards will be inserted here -->
             </div>
         </div>
-        <div class="section" id="yesterday-section">
+        <div class="section section--hidden" id="yesterday-section">
             <h2>Yesterday</h2>
             <div class="cards" id="yesterday-cards">
                 <!-- Recording cards will be inserted here -->
             </div>
         </div>
-        <div class="section" id="all-section">
+        <div class="section section--hidden" id="all-section">
             <h2>All</h2>
             <div class="cards" id="all-cards">
                 <!-- Recording cards will be inserted here -->
+            </div>
+        </div>
+        <div class="section">
+            <div class="cards" id="loading-cards">
+                <div class="card-loading-placeholder"></div>
+                <div class="card-loading-placeholder"></div>
+                <div class="card-loading-placeholder"></div>
+                <div class="card-loading-placeholder"></div>
+                <div class="card-loading-placeholder"></div>
+                <div class="card-loading-placeholder"></div>
+                <div class="card-loading-placeholder"></div>
+                <div class="card-loading-placeholder"></div>
+                <div class="card-loading-placeholder"></div>
+                <div class="card-loading-placeholder"></div>
+                <div class="card-loading-placeholder"></div>
+                <div class="card-loading-placeholder"></div>
             </div>
         </div>
     </div>
@@ -571,6 +626,7 @@
         const todayCards = document.getElementById('today-cards');
         const yesterdayCards = document.getElementById('yesterday-cards');
         const allCards = document.getElementById('all-cards');
+        const loadingCards = document.getElementById('loading-cards');
         const modal = document.getElementById('modal');
         const modalClose = document.getElementById('modal-close');
         const modalTitle = document.getElementById('modal-title');
@@ -801,9 +857,30 @@
             }
 
             // Update each section
-            updateSection(todayCards, sections.today);
-            updateSection(yesterdayCards, sections.yesterday);
-            updateSection(allCards, sections.all);
+
+            if (sections.today.length > 0) {
+                updateSection(todayCards, sections.today);
+                todayCards.closest('.section').classList.remove('section--hidden');
+            } else {
+                todayCards.closest('.section').classList.add('section--hidden');
+            }
+
+            if (sections.yesterday.length > 0) {
+                updateSection(yesterdayCards, sections.yesterday);
+                yesterdayCards.closest('.section').classList.remove('section--hidden');
+            } else {
+                yesterdayCards.closest('.section').classList.add('section--hidden');
+            }
+
+            if (sections.all.length > 0) {
+                updateSection(allCards, sections.all);
+                allCards.closest('.section').classList.remove('section--hidden');
+            } else {
+                allCards.closest('.section').classList.add('section--hidden');
+            }
+
+            loadingCards.closest('.section').classList.add('section--hidden');
+
         }
 
         // Helper function to format time

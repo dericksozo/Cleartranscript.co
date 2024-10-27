@@ -15,16 +15,16 @@
 4. [x] **Copy Icon in Modal**
    - Add the copy icon in the modal for the transcript, similar to how it is displayed on the main page cards.
 
-5. **Headers Display Logic**
-   - Ensure "Today" and "Yesterday" headers are only displayed if there are notes available for those days.
-
-6. **Timestamp Display**
-   - In the "All" section, replace the current time-only format (e.g., `13:32, 9:33`) with the full date and time unless it's for today or yesterday.
-   - For notes that are not under "Today" or "Yesterday," only display the date, no time.
-
-7. **Loading Indicator**
+5. [x] **Loading Indicator**
    - Create a loading indicator using a grey box, similar to YouTube's loading placeholders.
    - Display loading boxes as the initial HTML before the recordings are fully loaded.
+
+6. [x] **Headers Display Logic**
+   - Ensure "Today" and "Yesterday" headers are only displayed if there are notes available for those days.
+
+7. **Timestamp Display**
+   - In the "All" section, replace the current time-only format (e.g., `13:32, 9:33`) with the full date and time unless it's for today or yesterday.
+   - For notes that are not under "Today" or "Yesterday," only display the date, no time.
 
 8. **Playback Speed in Modal**
    - Ensure the playback speed control is always visible within the modal, even when the audio is playing.
