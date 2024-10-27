@@ -173,13 +173,15 @@
 
         .card h3 {
             margin-bottom: 10px;
-            font-size: 1.2em;
+            font-size: 1.1em;
+            font-weight: 500;
             color: #000;
         }
 
         .card p {
             font-size: 0.95em;
             color: #000;
+            line-height: 1.4;
         }
 
         .card .copy-card-button {
@@ -720,7 +722,7 @@
 
                 card.innerHTML = `
                     <h3>${rec.title}</h3>
-                    <p>${rec.transcript.length > 100 ? rec.transcript.substring(0, 100) + '...' : rec.transcript}</p>
+                    <p>${rec.transcript.length > 292 ? rec.transcript.substring(0, 292) + '...' : rec.transcript}</p>
                     <span class="card-time">${formatTime(recDate)}</span>
                     <button class="copy-card-button">Copy</button>
                 `;
