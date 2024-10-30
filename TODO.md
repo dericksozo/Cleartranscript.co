@@ -29,6 +29,12 @@
 8. **Playback Speed in Modal**
    - Ensure the playback speed control is always visible within the modal, even when the audio is playing.
 
+9. **Edit Title**
+   - Add an edit button to the title in the modal. Make it similar to the Copy Button with the tooltip, but with a pencil icon. When clicked, it converts the title into contenteditable.
+
+10. **Dark Mode**
+    - Add dark mode to the app.
+
 ## Backend Changes
 
 1. **Refactor Audio Upload & Transcription Process**
