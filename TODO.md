@@ -37,12 +37,9 @@
 
 ## Backend Changes
 
-1. **Refactor Audio Upload & Transcription Process**
-   - Use Firebase Cloud Functions for handling the upload and transcription process:
-     - Only handle the audio file upload on the client side.
-     - Implement Firebase Cloud Functions to listen for new audio uploads and trigger the LemonFox transcription server-side.
-     - Once the transcription is received, create the title server-side as well using LemonFox's LLM APIs.
-
+1. [x] **AI Title Generation**
+   - Implement a Deno server to handle the AI title generation server-side using LemonFox's LLM APIs.
+   
 ## New Features
 
 2. **Daily Summary Feature**

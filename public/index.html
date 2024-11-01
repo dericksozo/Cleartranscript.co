@@ -605,12 +605,37 @@
                 resolve(docRef.id);
             });
         }
+        
+        /* Generates an AI title using your preferred API */
+        function generateTitle(transcript) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const response = await fetch('https://cleartranscript-api.deno.dev/title', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Origin': window.location.origin
+                        },
+                        body: JSON.stringify({
+                            transcript: transcript
+                        })
+                    });
+
+                    const title = await response.text();
+                    resolve(title.trim());
+                } catch (error) {
+                    console.error('Error generating AI title:', error);
+                    reject(error);
+                }
+            });
+        }
 
         window.app = {
             uploadAudio,
             processTranscript,
             getRecordingsFromDB,
-            saveRecordingToDB
+            saveRecordingToDB,
+            generateTitle
         };
 
         window.dispatchEvent(new Event('firebaseReady'));
@@ -713,45 +738,57 @@
 
         /* Uploads an audio file (or blob) to Firebase Storage, generates a title, generates a transcript with LemonFox's API, and saves the recording to the recordings array. */
         async function saveRecording(file) {
+
             // Show loading indicator
             loadingIndicator.style.display = 'flex';
             uploadArea.classList.add('upload-area--uploading');
 
-            // Step 1: Upload the audio and get the audioURL
-            const audioURL = await window.app.uploadAudio(file);
-            console.log("What's the audioURL?", audioURL);
+            try {
+                // Step 1: Upload the audio and get the audioURL
+                const audioURL = await window.app.uploadAudio(file);
+                
+                // Step 2: Create initial recording object
+                const initialTitle = generateTitle(file.name);
+                const date = new Date().toISOString();
+                const recording = { 
+                    title: initialTitle, 
+                    transcript: 'Processing transcript...', 
+                    audioURL, 
+                    date 
+                };
 
-            // Step 2: Push a new recording object into the recordings array, but without the transcript
-            const title = generateTitle(file.name);
-            const date = new Date().toISOString();
+                recordings.push(recording);
+                renderRecordings();
 
-            // Create a recording object without the transcript yet
-            const recording = { title, transcript: 'Processing transcript...', audioURL, date };
-            recordings.push(recording); // Push it to the recordings array
+                // Step 3: Process the transcript
+                loadingIndicator.textContent = "Processing transcript...";
+                const transcript = await window.app.processTranscript(audioURL);
+                recording.transcript = transcript;
+                renderRecordings();
 
-            // Re-render UI immediately after adding the audio URL
-            renderRecordings();
+                // Step 4: Show the modal immediately after transcript is ready
+                openModal(0);
 
-            // Step 3: Process the transcript (this may take time)
-            loadingIndicator.textContent = "Processing transcript...";
-            const transcript = await window.app.processTranscript(audioURL);
-            console.log("What's the transcript?", transcript);
+                // Step 5: Generate AI title in the background and update both card and modal
+                loadingIndicator.textContent = "Generating title...";
+                const aiTitle = await window.app.generateTitle(transcript);
+                recording.title = aiTitle;
+                modalTitle.textContent = aiTitle;
+                renderRecordings();
 
-            // Step 4: Update the recording object with the transcript
-            recording.transcript = transcript; // Modify the object directly via reference
+                loadingIndicator.textContent = "Saving recording...";
 
-            // Re-render the UI after updating the transcript
-            renderRecordings();
+                // Step 6: Save to DB with the new title
+                await window.app.saveRecordingToDB(recording);
 
-            // Step 5: Open the modal so that the user clearly knows which is the new transcript.
-            openModal(0);
-
-            await window.app.saveRecordingToDB(recording);
-
-            // Step 6: Hide the loading indicator and remove the uploading class
-            uploadArea.classList.remove('upload-area--uploading');
-            loadingIndicator.style.display = 'none';
-
+            } catch (error) {
+                console.error('Error in saveRecording:', error);
+                alert('An error occurred while processing your recording.');
+            } finally {
+                // Clean up
+                uploadArea.classList.remove('upload-area--uploading');
+                loadingIndicator.style.display = 'none';
+            }
         }
 
         function loadRecordings(data) {
