@@ -238,6 +238,34 @@
             }
         }
 
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: calc(100% + 5px);
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: normal;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+
         /* Modal */
         .modal {
             position: fixed;
@@ -269,7 +297,8 @@
             overflow-y: auto;
         }
 
-        .modal h3 {
+        .modal-title {
+            position: relative;
             margin-bottom: 15px;
             color: #000;
             float: left;
@@ -460,7 +489,7 @@
         <div class="modal-container">
             <div class="modal-header">
                 <div class="flex-container flex-container--spaceBetween">
-                    <h3 id="modal-title">Transcript Title</h3>
+                    <h3 id="modal-title" class="modal-title tooltip js-editable" data-tooltip="Edit Title">Transcript Title</h3>
                     <button class="copy-button" id="copy-button" aria-label="Copy content">
                         <svg aria-hidden="true" focusable="false" class="copy-button-copy" viewBox="0 0 16 16" width="16" height="16" fill="#000">
                             <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path>
@@ -490,7 +519,7 @@
         // https://firebase.google.com/docs/web/setup#available-libraries
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
         import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
-        import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
         // Your web app's Firebase configuration
         // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -605,7 +634,18 @@
                 resolve(docRef.id);
             });
         }
-        
+
+        function updateRecordingInDB(recording) {
+            return new Promise(async (resolve, reject) => {
+                const docRef = doc(db, "recordings", recording.id); // Get a reference to the document using its ID
+                await updateDoc(docRef, {
+                    title: recording.title // Update the title property
+                });
+                console.log("Document updated with ID: ", recording.id);
+                resolve(recording.id);
+            });
+        }
+
         /* Generates an AI title using your preferred API */
         function generateTitle(transcript) {
             return new Promise(async (resolve, reject) => {
@@ -635,6 +675,7 @@
             processTranscript,
             getRecordingsFromDB,
             saveRecordingToDB,
+            updateRecordingInDB,
             generateTitle
         };
 
@@ -710,12 +751,88 @@
             loadRecordings(await window.app.getRecordingsFromDB());
         });
 
-        // Utility Functions
+         // Function to update the title in the database
+         async function updateTitleInDB(newTitle) {
+            const index = modal.dataset.index; // Get the current index
+            const recording = recordings[index]; // Get the current recording
+            recording.title = newTitle; // Update the title in the local array
+
+            // Update the loading indicator
+            loadingIndicator.textContent = "Updating title...";
+            loadingIndicator.style.display = 'flex'; // Show the loading indicator
+
+            // Update the database entry
+            await window.app.updateRecordingInDB(recording);
+            renderRecordings(); // Re-render the recordings to reflect changes
+
+            // Clear the loading indicator
+            loadingIndicator.style.display = 'none'; // Hide the loading indicator
+        }
+
         function generateTitle(transcript) {
             if (transcript) {
                 return transcript;
             } else {
                 return "New Recording";
+            }
+        }
+
+        let isEditingTitle = false;
+
+        // Add this function to handle title editing
+        function editTitle() {
+            if (isEditingTitle) return; // Prevent adding multiple listeners
+
+            isEditingTitle = true; // Set the flag to true
+            const titleElement = modalTitle;
+            titleElement.setAttribute('contenteditable', 'true');
+            titleElement.focus();
+
+            // Remove the tooltip class to hide the tooltip
+            titleElement.classList.remove('tooltip');
+
+            // Select the entire contents of the title using Range and Selection APIs
+            const range = document.createRange();
+            range.selectNodeContents(titleElement);
+            const selection = window.getSelection();
+            selection.removeAllRanges(); // Clear any existing selections
+            selection.addRange(range); // Select the new range
+
+            // Save the title on Enter key press
+            const handleKeyDown = async (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); // Prevent new line
+                    if (titleElement.textContent.trim() === '') {
+                        // If the title is empty, do not allow adding empty content
+                        titleElement.focus(); // Keep focus on the title
+                        return; // Exit the function
+                    }
+                    finalizeTitleEditing(titleElement);
+                }
+            };
+
+            // Finalize title editing when focus is lost
+            const handleBlur = () => {
+                if (titleElement.textContent.trim() === '') {
+                    titleElement.focus(); // Prevent losing focus if the title is empty
+                } else {
+                    finalizeTitleEditing(titleElement);
+                }
+            };
+
+            titleElement.addEventListener('keydown', handleKeyDown);
+            titleElement.addEventListener('blur', handleBlur);
+
+            async function finalizeTitleEditing(element) {
+                const newTitle = element.textContent.trim();
+                if (newTitle) {
+                    element.removeAttribute('contenteditable'); // Disable editing
+                    await updateTitleInDB(newTitle); // Update the database
+                }
+                isEditingTitle = false; // Reset the flag
+                element.classList.add('tooltip'); // Re-add the tooltip class
+                element.removeEventListener('keydown', handleKeyDown); // Clean up the listener
+                element.removeEventListener('blur', handleBlur); // Clean up the blur listener
             }
         }
 
@@ -1098,6 +1215,9 @@
                 console.error('Could not copy text:', err);
             });
         });
+
+        // Enable Title Editing event listener
+        document.querySelector('.js-editable').addEventListener('click', editTitle);
 
     </script>
 
