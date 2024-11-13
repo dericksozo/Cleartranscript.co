@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cleartranscript-v1';
+const CACHE_NAME = 'cleartranscript-v2';
 const urlsToCache = [
   '/',
   '/index.html',
