@@ -22,18 +22,19 @@
 6. [x] **Headers Display Logic**
    - Ensure "Today" and "Yesterday" headers are only displayed if there are notes available for those days.
 
-7. **Timestamp Display**
+7. [x] **Edit Title**
+   - Add an edit button to the title in the modal. Make it similar to the Copy Button with the tooltip, but with a pencil icon. When clicked, it converts the title into contenteditable.
+
+8. [x] **Dark Mode**
+    - Add dark mode to the app.
+
+9. **Timestamp Display**
    - In the "All" section, replace the current time-only format (e.g., `13:32, 9:33`) with the full date and time unless it's for today or yesterday.
    - For notes that are not under "Today" or "Yesterday," only display the date, no time.
 
-8. **Playback Speed in Modal**
+10. **Playback Speed in Modal**
    - Ensure the playback speed control is always visible within the modal, even when the audio is playing.
 
-9. **Edit Title**
-   - Add an edit button to the title in the modal. Make it similar to the Copy Button with the tooltip, but with a pencil icon. When clicked, it converts the title into contenteditable.
-
-10. **Dark Mode**
-    - Add dark mode to the app.
 
 ## Backend Changes
 
