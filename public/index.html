@@ -629,7 +629,7 @@
         // https://firebase.google.com/docs/web/setup#available-libraries
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
         import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDoc, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
         // Your web app's Firebase configuration
         // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -736,6 +736,23 @@
 
             });
         };
+        
+        function getSingleRecordingFromDB(id) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const docRef = doc(db, "recordings", id);
+                    const docSnap = await getDoc(docRef);
+                    
+                    if (docSnap.exists()) {
+                        resolve({ id: docSnap.id, ...docSnap.data() });
+                    } else {
+                        reject(new Error('Recording not found'));
+                    }
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
 
         function saveRecordingToDB(recording) {
             return new Promise(async (resolve, reject) => {
@@ -784,6 +801,7 @@
             uploadAudio,
             processTranscript,
             getRecordingsFromDB,
+            getSingleRecordingFromDB,
             saveRecordingToDB,
             updateRecordingInDB,
             generateTitle
@@ -822,6 +840,7 @@
         let recordedChunks = [];
         let recordingStartTime;
         let recordingInterval;
+        let loadedWithRecordingId = false;
 
         // Mock JSON Data
         const mockData = [
@@ -857,8 +876,26 @@
             }
         ];
 
+        // Update the firebaseReady listener
         window.addEventListener('firebaseReady', async function () {
-            loadRecordings(await window.app.getRecordingsFromDB());
+            const urlParams = new URLSearchParams(window.location.search);
+            const recordingId = urlParams.get('id');
+            
+            if (recordingId) {
+                loadedWithId = true; // Set the flag
+                try {
+                    loadingCards.closest('.section').classList.remove('section--hidden');
+                    const recording = await window.app.getSingleRecordingFromDB(recordingId);
+                    await displaySingleRecording(recording);
+                } catch (error) {
+                    console.error('Error loading specific recording:', error);
+                    window.location.href = '/';
+                }
+            } else {
+                // Load all recordings
+                const allRecordings = await window.app.getRecordingsFromDB();
+                loadRecordings(allRecordings);
+            }
         });
 
          // Function to update the title in the database
@@ -1032,6 +1069,19 @@
             renderRecordings();
         }
 
+        async function displaySingleRecording(recording) {
+            // Hide all sections initially
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('section--hidden');
+            });
+            
+            // Set recordings array to only contain this recording
+            recordings = [recording];
+            
+            // Show only the modal with this recording
+            openModal(0);
+        }
+
         function renderRecordings() {
             const now = new Date();
             const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -1163,14 +1213,29 @@
             recordingDate.textContent = formatDate(rec.date);
             modalTranscript.textContent = rec.transcript;
             modalAudio.src = rec.audioURL;
-            // Set the default playback speed to 1.75
             modalAudio.playbackRate = 1.75;
             modal.dataset.index = index;
             modal.style.display = 'flex';
+            
+            // Update URL with recording ID without reloading
+            const url = new URL(window.location);
+            url.searchParams.set('id', rec.id);
+            window.history.pushState({}, '', url);
         }
 
+        // Update the closeModal function
         function closeModal() {
             modal.style.display = 'none';
+            const url = new URL(window.location);
+            url.searchParams.delete('id');
+            
+            if (loadedWithId) {
+                // Refresh the page if we initially loaded with an ID
+                window.location.href = url.toString();
+            } else {
+                // Otherwise just update the URL without refreshing
+                window.history.pushState({}, '', url);
+            }
         }
         
         // Drag and Drop Handlers
