@@ -882,7 +882,7 @@
             const recordingId = urlParams.get('id');
             
             if (recordingId) {
-                loadedWithId = true; // Set the flag
+                loadedWithRecordingId = true; // Set the flag
                 try {
                     loadingCards.closest('.section').classList.remove('section--hidden');
                     const recording = await window.app.getSingleRecordingFromDB(recordingId);
@@ -1031,7 +1031,7 @@
                 renderRecordings();
 
                 // Step 4: Show the modal immediately after transcript is ready
-                openModal(0);
+                openModal(0, { updateURL: false });
 
                 // Step 5: Generate AI title in the background and update both card and modal
                 loadingIndicator.textContent = "Generating title...";
@@ -1043,7 +1043,15 @@
                 loadingIndicator.textContent = "Saving recording...";
 
                 // Step 6: Save to DB with the new title
-                await window.app.saveRecordingToDB(recording);
+                const recordingId = await window.app.saveRecordingToDB(recording);
+                recording.id = recordingId;
+
+                // Step 7: Update URL
+                openModal(0);
+                
+        const url = new URL(window.location);
+        url.searchParams.set('id', recordingId);
+        window.history.pushState({}, '', url);
 
             } catch (error) {
                 console.error('Error in saveRecording:', error);
@@ -1207,7 +1215,7 @@
             return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
         }
 
-        function openModal(index) {
+        function openModal(index, { updateURL = true } = {}) {
             const rec = recordings[index];
             modalTitle.textContent = rec.title;
             recordingDate.textContent = formatDate(rec.date);
@@ -1217,10 +1225,12 @@
             modal.dataset.index = index;
             modal.style.display = 'flex';
             
-            // Update URL with recording ID without reloading
-            const url = new URL(window.location);
-            url.searchParams.set('id', rec.id);
-            window.history.pushState({}, '', url);
+            // Only update URL if requested and we have a recording ID
+            if (updateURL && rec.id) {
+                const url = new URL(window.location);
+                url.searchParams.set('id', rec.id);
+                window.history.pushState({}, '', url);
+            }
         }
 
         // Update the closeModal function
@@ -1229,7 +1239,7 @@
             const url = new URL(window.location);
             url.searchParams.delete('id');
             
-            if (loadedWithId) {
+            if (loadedWithRecordingId) {
                 // Refresh the page if we initially loaded with an ID
                 window.location.href = url.toString();
             } else {
