@@ -486,6 +486,14 @@
 
         }
 
+        .load-all-button {
+            display: none;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
         /* Responsive */
         @media (max-width: 600px) {
             .record-button {
@@ -554,6 +562,7 @@
             </div>
         </div>
     </div>
+    <button id="load-all-button" class="load-all-button">Load All</button>
 
     <!-- Modal -->
     <!-- Modal -->
@@ -602,7 +611,7 @@
         // https://firebase.google.com/docs/web/setup#available-libraries
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
         import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
-        import { getFirestore, collection, addDoc, getDoc, getDocs, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDoc, getDocs, doc, updateDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
         // Your web app's Firebase configuration
         // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -692,21 +701,32 @@
         };
         
 
-        /* Get all the recordings from the firestore database. */
-        function getRecordingsFromDB() {
+        /* Get recordings from the Firestore database. If loadAll is false,
+           only fetch notes from yesterday and today. */
+        function getRecordingsFromDB(loadAll = false) {
             return new Promise(async (resolve, reject) => {
-                const querySnapshot = await getDocs(collection(db, "recordings"));
+                try {
+                    let q;
+                    if (loadAll) {
+                        q = query(collection(db, "recordings"), orderBy("date", "desc"));
+                    } else {
+                        const now = new Date();
+                        const start = new Date(now);
+                        start.setDate(start.getDate() - 1); // yesterday
+                        start.setHours(0, 0, 0, 0);
+                        q = query(
+                            collection(db, "recordings"),
+                            where("date", ">=", start.toISOString()),
+                            orderBy("date", "desc")
+                        );
+                    }
 
-                console.log("querySnapshot", querySnapshot);
-                const dataArray = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                console.log("dataArray", dataArray);
-                resolve(dataArray);
-
-                // querySnapshot.forEach((doc) => {
-                //     console.log("What's the doc?", doc);
-                //     console.log(`${doc.id} => ${doc.data()}`);
-                // });
-
+                    const querySnapshot = await getDocs(q);
+                    const dataArray = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    resolve(dataArray);
+                } catch (error) {
+                    reject(error);
+                }
             });
         };
         
@@ -806,6 +826,7 @@
         const copyButton = document.getElementById('copy-button');
         const chatGPTButton = document.getElementById('chatgpt-button');
         const loadingIndicator = document.getElementById('loading-indicator');
+        const loadAllButton = document.getElementById('load-all-button');
 
         // State
         let recordings = []; // Array to store recording objects
@@ -857,6 +878,7 @@
             
             if (recordingId) {
                 loadedWithRecordingId = true; // Set the flag
+                loadAllButton.style.display = 'none';
                 try {
                     loadingCards.closest('.section').classList.remove('section--hidden');
                     const recording = await window.app.getSingleRecordingFromDB(recordingId);
@@ -866,9 +888,10 @@
                     window.location.href = '/';
                 }
             } else {
-                // Load all recordings
-                const allRecordings = await window.app.getRecordingsFromDB();
-                loadRecordings(allRecordings);
+                // Load only recent recordings (today and yesterday)
+                const recentRecordings = await window.app.getRecordingsFromDB();
+                loadRecordings(recentRecordings);
+                loadAllButton.style.display = 'block';
             }
         });
 
@@ -1056,6 +1079,8 @@
             document.querySelectorAll('.section').forEach(section => {
                 section.classList.add('section--hidden');
             });
+
+            loadAllButton.style.display = 'none';
             
             // Set recordings array to only contain this recording
             recordings = [recording];
@@ -1385,7 +1410,16 @@
                 console.warn('Transcript text is empty, cannot open in ChatGPT.');
             }
         });
-        
+
+        // Load all recordings on demand
+        loadAllButton.addEventListener('click', async () => {
+            loadAllButton.disabled = true;
+            loadAllButton.textContent = 'Loading...';
+            const allRecordings = await window.app.getRecordingsFromDB(true);
+            loadRecordings(allRecordings);
+            loadAllButton.style.display = 'none';
+        });
+
         // Enable Title Editing event listener
         document.querySelector('.js-editable').addEventListener('click', editTitle);
 
