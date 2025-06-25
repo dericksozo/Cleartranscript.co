@@ -845,7 +845,12 @@
                     const docRef = doc(db, "summaries", dateKey);
                     const docSnap = await getDoc(docRef);
                     if (docSnap.exists()) {
-                        resolve({ id: docSnap.id, ...docSnap.data() });
+                        const data = docSnap.data();
+                        if (data.summary && !data.overallSummary) {
+                            resolve({ id: docSnap.id, overallSummary: data.summary, noteSummaries: '', lastNoteTime: data.lastNoteTime });
+                        } else {
+                            resolve({ id: docSnap.id, ...data });
+                        }
                     } else {
                         resolve(null);
                     }
@@ -855,11 +860,11 @@
             });
         }
 
-        function saveSummaryToDB(dateKey, summary, lastNoteTime) {
+        function saveSummaryToDB(dateKey, overallSummary, noteSummaries, lastNoteTime) {
             return new Promise(async (resolve, reject) => {
                 try {
                     const docRef = doc(db, "summaries", dateKey);
-                    await setDoc(docRef, { summary, lastNoteTime }, { merge: true });
+                    await setDoc(docRef, { overallSummary, noteSummaries, lastNoteTime }, { merge: true });
                     resolve();
                 } catch (error) {
                     reject(error);
@@ -1310,8 +1315,10 @@
                 const latestToday = sections.today[0].rec.date;
                 const todayKey = getDateKey(latestToday);
                 const todaySummary = summaries[todayKey];
-                if (todaySummary && todaySummary.summary) {
-                    todaySummaryBox.textContent = todaySummary.summary;
+                if (todaySummary && (todaySummary.overallSummary || todaySummary.summary)) {
+                    const mainText = todaySummary.overallSummary || todaySummary.summary;
+                    const notesText = todaySummary.noteSummaries || '';
+                    todaySummaryBox.innerHTML = `<p>${mainText}</p><p>${notesText}</p>`;
                     todaySummaryBox.style.display = 'block';
                     if (new Date(latestToday) <= new Date(todaySummary.lastNoteTime)) {
                         todaySummaryButton.style.display = 'none';
@@ -1334,8 +1341,10 @@
                 const latestYest = sections.yesterday[0].rec.date;
                 const yestKey = getDateKey(latestYest);
                 const yestSummary = summaries[yestKey];
-                if (yestSummary && yestSummary.summary) {
-                    yesterdaySummaryBox.textContent = yestSummary.summary;
+                if (yestSummary && (yestSummary.overallSummary || yestSummary.summary)) {
+                    const mainText = yestSummary.overallSummary || yestSummary.summary;
+                    const notesText = yestSummary.noteSummaries || '';
+                    yesterdaySummaryBox.innerHTML = `<p>${mainText}</p><p>${notesText}</p>`;
                     yesterdaySummaryBox.style.display = 'block';
                     if (new Date(latestYest) <= new Date(yestSummary.lastNoteTime)) {
                         yesterdaySummaryButton.style.display = 'none';
@@ -1558,11 +1567,12 @@
                     body: JSON.stringify({ recordings: payload })
                 });
                 const data = await response.json();
-                const summaryText = data.summary || data;
-                box.textContent = summaryText;
+                const overallSummary = data.overallSummary || data.summary || '';
+                const noteSummaries = data.noteSummaries || '';
+                box.innerHTML = `<p>${overallSummary}</p><p>${noteSummaries}</p>`;
                 box.style.display = 'block';
-                summaries[dateKey] = { summary: summaryText, lastNoteTime: sectionRecs[0].date };
-                await window.app.saveSummaryToDB(dateKey, summaryText, sectionRecs[0].date);
+                summaries[dateKey] = { overallSummary, noteSummaries, lastNoteTime: sectionRecs[0].date };
+                await window.app.saveSummaryToDB(dateKey, overallSummary, noteSummaries, sectionRecs[0].date);
                 button.style.display = 'none';
             } catch (err) {
                 console.error('Error generating summary:', err);
