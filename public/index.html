@@ -890,7 +890,7 @@
             loadingIndicator.style.display = 'none'; // Hide the loading indicator
         }
 
-        function generateTitle(transcript) {
+        function generateLocalTitle(transcript) {
             if (transcript) {
                 return transcript;
             } else {
@@ -986,7 +986,7 @@
                 const audioURL = await window.app.uploadAudio(file);
                 
                 // Step 2: Create initial recording object
-                const initialTitle = generateTitle(file.name);
+                const initialTitle = generateLocalTitle(file.name);
                 const date = new Date().toISOString();
                 const recording = { 
                     title: initialTitle, 
