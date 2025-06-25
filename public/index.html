@@ -224,6 +224,52 @@
             font-size: 1rem;
         }
 
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .summary-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+        }
+
+        .summary-icon {
+            width: 1em;
+            height: 1em;
+            vertical-align: middle;
+            fill: currentColor;
+            overflow: hidden;
+        }
+
+        .summary-button:hover {
+            background-color: var(--hover-bg);
+        }
+
+        .summary-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid currentColor;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .summary-box {
+            display: none;
+            background-color: #e6f4ff;
+            border: 1px solid #b3d4ff;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+        }
+
         .cards {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -537,13 +583,31 @@
     <!-- Sections -->
     <div class="sections">
         <div class="section section--hidden" id="today-section">
-            <h2>Today</h2>
+            <div class="section-header">
+                <h2>Today</h2>
+                <button class="summary-button tooltip" data-tooltip="Generate Summary" id="today-summary-button" aria-label="Generate summary">
+                    <svg class="summary-icon" viewBox="0 0 1024 1024" width="1em" height="1em" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M526.791111 1005.037037h-329.955555c-61.62963 0-111.691852-50.062222-111.691852-111.691852V246.518519c0-61.62963 50.062222-111.691852 111.691852-111.691852h145.066666c21.617778-57.457778 74.145185-132.740741 168.770371-132.740741 101.451852 0 147.152593 85.712593 164.598518 132.740741h132.361482c61.62963 0 111.691852 50.062222 111.691851 111.691852v376.794074c0 20.859259-17.066667 37.925926-37.925925 37.925926s-37.925926-17.066667-37.925926-37.925926V246.518519c0-19.721481-16.118519-35.84-35.84-35.84h-160.237037c-17.825185 0-33.185185-12.515556-36.977778-29.771852-0.948148-3.982222-24.082963-102.968889-99.745185-102.968889-80.213333 0-103.537778 101.831111-103.727408 102.968889a37.736296 37.736296 0 0 1-36.977778 29.771852h-173.131851c-19.721481 0-35.84 16.118519-35.84 35.84v646.637037c0 19.721481 16.118519 35.84 35.84 35.84h329.955555c20.859259 0 37.925926 17.066667 37.925926 37.925925s-17.066667 38.115556-37.925926 38.115556z" fill="black"/>
+                        <path d="M545.754074 211.057778h-76.420741c-10.24 0-18.773333-8.343704-18.773333-18.773334v-0.568888c0-10.24 8.343704-18.773333 18.773333-18.773334h76.420741c10.24 0 18.773333 8.343704 18.773333 18.773334v0.568888c0 10.24-8.533333 18.773333-18.773333 18.773334zM754.346667 387.602963H260.740741c-10.24 0-18.773333-8.343704-18.773334-18.773333v-0.568889c0-10.24 8.343704-18.773333 18.773334-18.773334h493.605926c10.24 0 18.773333 8.343704 18.773333 18.773334v0.568889c0 10.42963-8.533333 18.773333-18.773333 18.773333zM754.346667 564.337778H260.740741c-10.24 0-18.773333-8.343704-18.773334-18.773334v-0.568888c0-10.24 8.343704-18.773333 18.773334-18.773334h493.605926c10.24 0 18.773333 8.343704 18.773333 18.773334v0.568888c0 10.42963-8.533333 18.773333-18.773333 18.773334zM521.481481 741.072593H255.620741c-10.24 0-18.773333-8.343704-18.773334-18.773334v-0.568889c0-10.24 8.343704-18.773333 18.773334-18.773333H521.481481c10.24 0 18.773333 8.343704 18.773334 18.773333v0.568889c0 10.24-8.343704 18.773333-18.773334 18.773334zM769.137778 987.780741c-3.982222 0-8.154074-1.327407-11.567408-3.982222l-104.485926-80.213334a18.811259 18.811259 0 0 1-3.413333-26.548148c6.447407-8.343704 18.204444-9.860741 26.548148-3.413333l89.884445 69.214815 156.065185-189.44a18.962963 18.962963 0 0 1 26.737778-2.654815 18.962963 18.962963 0 0 1 2.654814 26.737777l-167.632592 203.662223c-3.982222 4.171852-9.291852 6.637037-14.791111 6.637037z" fill="black"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="summary-box" id="today-summary-box"></div>
             <div class="cards" id="today-cards">
                 <!-- Recording cards will be inserted here -->
             </div>
         </div>
         <div class="section section--hidden" id="yesterday-section">
-            <h2>Yesterday</h2>
+            <div class="section-header">
+                <h2>Yesterday</h2>
+                <button class="summary-button tooltip" data-tooltip="Generate Summary" id="yesterday-summary-button" aria-label="Generate summary">
+                    <svg class="summary-icon" viewBox="0 0 1024 1024" width="1em" height="1em" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M526.791111 1005.037037h-329.955555c-61.62963 0-111.691852-50.062222-111.691852-111.691852V246.518519c0-61.62963 50.062222-111.691852 111.691852-111.691852h145.066666c21.617778-57.457778 74.145185-132.740741 168.770371-132.740741 101.451852 0 147.152593 85.712593 164.598518 132.740741h132.361482c61.62963 0 111.691852 50.062222 111.691851 111.691852v376.794074c0 20.859259-17.066667 37.925926-37.925925 37.925926s-37.925926-17.066667-37.925926-37.925926V246.518519c0-19.721481-16.118519-35.84-35.84-35.84h-160.237037c-17.825185 0-33.185185-12.515556-36.977778-29.771852-0.948148-3.982222-24.082963-102.968889-99.745185-102.968889-80.213333 0-103.537778 101.831111-103.727408 102.968889a37.736296 37.736296 0 0 1-36.977778 29.771852h-173.131851c-19.721481 0-35.84 16.118519-35.84 35.84v646.637037c0 19.721481 16.118519 35.84 35.84 35.84h329.955555c20.859259 0 37.925926 17.066667 37.925926 37.925925s-17.066667 38.115556-37.925926 38.115556z" fill="black"/>
+                        <path d="M545.754074 211.057778h-76.420741c-10.24 0-18.773333-8.343704-18.773333-18.773334v-0.568888c0-10.24 8.343704-18.773333 18.773333-18.773334h76.420741c10.24 0 18.773333 8.343704 18.773333 18.773334v0.568888c0 10.24-8.533333 18.773333-18.773333 18.773334zM754.346667 387.602963H260.740741c-10.24 0-18.773333-8.343704-18.773334-18.773333v-0.568889c0-10.24 8.343704-18.773333 18.773334-18.773334h493.605926c10.24 0 18.773333 8.343704 18.773333 18.773334v0.568889c0 10.42963-8.533333 18.773333-18.773333 18.773333zM754.346667 564.337778H260.740741c-10.24 0-18.773333-8.343704-18.773334-18.773334v-0.568888c0-10.24 8.343704-18.773333 18.773334-18.773334h493.605926c10.24 0 18.773333 8.343704 18.773333 18.773334v0.568888c0 10.42963-8.533333 18.773333-18.773333 18.773334zM521.481481 741.072593H255.620741c-10.24 0-18.773333-8.343704-18.773334-18.773334v-0.568889c0-10.24 8.343704-18.773333 18.773334-18.773333H521.481481c10.24 0 18.773333 8.343704 18.773334 18.773333v0.568889c0 10.24-8.343704 18.773333-18.773334 18.773334zM769.137778 987.780741c-3.982222 0-8.154074-1.327407-11.567408-3.982222l-104.485926-80.213334a18.811259 18.811259 0 0 1-3.413333-26.548148c6.447407-8.343704 18.204444-9.860741 26.548148-3.413333l89.884445 69.214815 156.065185-189.44a18.962963 18.962963 0 0 1 26.737778-2.654815 18.962963 18.962963 0 0 1 2.654814 26.737777l-167.632592 203.662223c-3.982222 4.171852-9.291852 6.637037-14.791111 6.637037z" fill="black"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="summary-box" id="yesterday-summary-box"></div>
             <div class="cards" id="yesterday-cards">
                 <!-- Recording cards will be inserted here -->
             </div>
@@ -620,7 +684,7 @@
         // https://firebase.google.com/docs/web/setup#available-libraries
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
         import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
-        import { getFirestore, collection, addDoc, getDoc, getDocs, doc, updateDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDoc, getDocs, doc, updateDoc, setDoc, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
         // Your web app's Firebase configuration
         // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -775,6 +839,34 @@
             });
         }
 
+        function getSummaryFromDB(dateKey) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const docRef = doc(db, "summaries", dateKey);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        resolve({ id: docSnap.id, ...docSnap.data() });
+                    } else {
+                        resolve(null);
+                    }
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
+        function saveSummaryToDB(dateKey, summary, lastNoteTime) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const docRef = doc(db, "summaries", dateKey);
+                    await setDoc(docRef, { summary, lastNoteTime }, { merge: true });
+                    resolve();
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
         /* Generates an AI title using your preferred API */
         function generateTitle(transcript) {
             return new Promise(async (resolve, reject) => {
@@ -806,7 +898,9 @@
             getSingleRecordingFromDB,
             saveRecordingToDB,
             updateRecordingInDB,
-            generateTitle
+            generateTitle,
+            getSummaryFromDB,
+            saveSummaryToDB
         };
 
         window.dispatchEvent(new Event('firebaseReady'));
@@ -836,6 +930,10 @@
         const chatGPTButton = document.getElementById('chatgpt-button');
         const loadingIndicator = document.getElementById('loading-indicator');
         const loadAllButton = document.getElementById('load-all-button');
+        const todaySummaryButton = document.getElementById('today-summary-button');
+        const yesterdaySummaryButton = document.getElementById('yesterday-summary-button');
+        const todaySummaryBox = document.getElementById('today-summary-box');
+        const yesterdaySummaryBox = document.getElementById('yesterday-summary-box');
 
         // State
         let recordings = []; // Array to store recording objects
@@ -845,6 +943,12 @@
         let recordingStartTime;
         let recordingInterval;
         let loadedWithRecordingId = false;
+        let summaries = {};
+        const summaryIconSVG = `
+            <svg class="summary-icon" viewBox="0 0 1024 1024" width="1em" height="1em" xmlns="http://www.w3.org/2000/svg">
+                <path d="M526.791111 1005.037037h-329.955555c-61.62963 0-111.691852-50.062222-111.691852-111.691852V246.518519c0-61.62963 50.062222-111.691852 111.691852-111.691852h145.066666c21.617778-57.457778 74.145185-132.740741 168.770371-132.740741 101.451852 0 147.152593 85.712593 164.598518 132.740741h132.361482c61.62963 0 111.691852 50.062222 111.691851 111.691852v376.794074c0 20.859259-17.066667 37.925926-37.925925 37.925926s-37.925926-17.066667-37.925926-37.925926V246.518519c0-19.721481-16.118519-35.84-35.84-35.84h-160.237037c-17.825185 0-33.185185-12.515556-36.977778-29.771852-0.948148-3.982222-24.082963-102.968889-99.745185-102.968889-80.213333 0-103.537778 101.831111-103.727408 102.968889a37.736296 37.736296 0 0 1-36.977778 29.771852h-173.131851c-19.721481 0-35.84 16.118519-35.84 35.84v646.637037c0 19.721481 16.118519 35.84 35.84 35.84h329.955555c20.859259 0 37.925926 17.066667 37.925926 37.925925s-17.066667 38.115556-37.925926 38.115556z" fill="black"/>
+                <path d="M545.754074 211.057778h-76.420741c-10.24 0-18.773333-8.343704-18.773333-18.773334v-0.568888c0-10.24 8.343704-18.773333 18.773333-18.773334h76.420741c10.24 0 18.773333 8.343704 18.773333 18.773334v0.568888c0 10.24-8.533333 18.773333-18.773333 18.773334zM754.346667 387.602963H260.740741c-10.24 0-18.773333-8.343704-18.773334-18.773333v-0.568889c0-10.24 8.343704-18.773333 18.773334-18.773334h493.605926c10.24 0 18.773333 8.343704 18.773333 18.773334v0.568889c0 10.42963-8.533333 18.773333-18.773333 18.773333zM754.346667 564.337778H260.740741c-10.24 0-18.773333-8.343704-18.773334-18.773334v-0.568888c0-10.24 8.343704-18.773333 18.773334-18.773334h493.605926c10.24 0 18.773333 8.343704 18.773333 18.773334v0.568888c0 10.42963-8.533333 18.773333-18.773333 18.773334zM521.481481 741.072593H255.620741c-10.24 0-18.773333-8.343704-18.773334-18.773334v-0.568889c0-10.24 8.343704-18.773333 18.773334-18.773333H521.481481c10.24 0 18.773333 8.343704 18.773334 18.773333v0.568889c0 10.24-8.343704 18.773333-18.773334 18.773334zM769.137778 987.780741c-3.982222 0-8.154074-1.327407-11.567408-3.982222l-104.485926-80.213334a18.811259 18.811259 0 0 1-3.413333-26.548148c6.447407-8.343704 18.204444-9.860741 26.548148-3.413333l89.884445 69.214815 156.065185-189.44a18.962963 18.962963 0 0 1 26.737778-2.654815 18.962963 18.962963 0 0 1 2.654814 26.737777l-167.632592 203.662223c-3.982222 4.171852-9.291852 6.637037-14.791111 6.637037z" fill="black"/>
+            </svg>`;
 
         // Mock JSON Data
         const mockData = [
@@ -900,6 +1004,13 @@
                 // Load only recent recordings (today and yesterday)
                 const recentRecordings = await window.app.getRecordingsFromDB();
                 loadRecordings(recentRecordings);
+
+                const todayKey = getDateKey(new Date());
+                const yesterdayKey = getDateKey(new Date(Date.now() - 86400000));
+                summaries[todayKey] = await window.app.getSummaryFromDB(todayKey);
+                summaries[yesterdayKey] = await window.app.getSummaryFromDB(yesterdayKey);
+
+                renderRecordings();
                 loadAllButton.style.display = 'block';
             }
         });
@@ -1196,15 +1307,49 @@
             if (sections.today.length > 0) {
                 updateSection(todayCards, sections.today);
                 todayCards.closest('.section').classList.remove('section--hidden');
+                const latestToday = sections.today[0].rec.date;
+                const todayKey = getDateKey(latestToday);
+                const todaySummary = summaries[todayKey];
+                if (todaySummary && todaySummary.summary) {
+                    todaySummaryBox.textContent = todaySummary.summary;
+                    todaySummaryBox.style.display = 'block';
+                    if (new Date(latestToday) <= new Date(todaySummary.lastNoteTime)) {
+                        todaySummaryButton.style.display = 'none';
+                    } else {
+                        todaySummaryButton.style.display = 'inline-block';
+                    }
+                } else {
+                    todaySummaryBox.style.display = 'none';
+                    todaySummaryButton.style.display = 'inline-block';
+                }
             } else {
                 todayCards.closest('.section').classList.add('section--hidden');
+                todaySummaryBox.style.display = 'none';
+                todaySummaryButton.style.display = 'none';
             }
 
             if (sections.yesterday.length > 0) {
                 updateSection(yesterdayCards, sections.yesterday);
                 yesterdayCards.closest('.section').classList.remove('section--hidden');
+                const latestYest = sections.yesterday[0].rec.date;
+                const yestKey = getDateKey(latestYest);
+                const yestSummary = summaries[yestKey];
+                if (yestSummary && yestSummary.summary) {
+                    yesterdaySummaryBox.textContent = yestSummary.summary;
+                    yesterdaySummaryBox.style.display = 'block';
+                    if (new Date(latestYest) <= new Date(yestSummary.lastNoteTime)) {
+                        yesterdaySummaryButton.style.display = 'none';
+                    } else {
+                        yesterdaySummaryButton.style.display = 'inline-block';
+                    }
+                } else {
+                    yesterdaySummaryBox.style.display = 'none';
+                    yesterdaySummaryButton.style.display = 'inline-block';
+                }
             } else {
                 yesterdayCards.closest('.section').classList.add('section--hidden');
+                yesterdaySummaryBox.style.display = 'none';
+                yesterdaySummaryButton.style.display = 'none';
             }
 
             if (sections.all.length > 0) {
@@ -1221,6 +1366,11 @@
         // Helper function to format time
         function formatTime(date) {
             return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+        }
+
+        function getDateKey(date) {
+            const d = new Date(date);
+            return d.toISOString().split('T')[0];
         }
 
         function openModal(index, { updateURL = true } = {}) {
@@ -1388,6 +1538,40 @@
             releaseWakeLock();  // Release Wake Lock when recording stops
         }
 
+        async function handleSummaryClick(section) {
+            const button = section === 'today' ? todaySummaryButton : yesterdaySummaryButton;
+            const box = section === 'today' ? todaySummaryBox : yesterdaySummaryBox;
+            const dateKey = section === 'today' ? getDateKey(new Date()) : getDateKey(new Date(Date.now() - 86400000));
+            const sectionRecs = recordings.filter(r => getDateKey(r.date) === dateKey);
+            if (sectionRecs.length === 0) return;
+
+            button.innerHTML = '<div class="summary-spinner"></div>';
+            button.disabled = true;
+            try {
+                const payload = sectionRecs.map(r => ({ title: r.title, transcript: r.transcript, date: r.date }));
+                const response = await fetch('https://cleartranscript-api.deno.dev/summary', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Origin': window.location.origin
+                    },
+                    body: JSON.stringify({ recordings: payload })
+                });
+                const data = await response.json();
+                const summaryText = data.summary || data;
+                box.textContent = summaryText;
+                box.style.display = 'block';
+                summaries[dateKey] = { summary: summaryText, lastNoteTime: sectionRecs[0].date };
+                await window.app.saveSummaryToDB(dateKey, summaryText, sectionRecs[0].date);
+                button.style.display = 'none';
+            } catch (err) {
+                console.error('Error generating summary:', err);
+            } finally {
+                button.disabled = false;
+                button.innerHTML = summaryIconSVG;
+            }
+        }
+
         // Modal Handlers
         window.addEventListener('click', (e) => {
             if (e.target === modal) {
@@ -1428,6 +1612,9 @@
             loadRecordings(allRecordings);
             loadAllButton.style.display = 'none';
         });
+
+        todaySummaryButton.addEventListener('click', () => handleSummaryClick('today'));
+        yesterdaySummaryButton.addEventListener('click', () => handleSummaryClick('yesterday'));
 
         // Enable Title Editing event listener
         document.querySelector('.js-editable').addEventListener('click', editTitle);
