@@ -2,7 +2,7 @@ const CACHE_NAME = 'cleartranscript-v2';
 const urlsToCache = [
   '/',
   '/index.html',
-  '/icon-maskable.png',
+  '/maskable-icon.png',
   '/icon-192x192.png'
 ];
 
