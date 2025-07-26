@@ -1376,7 +1376,12 @@
         }
 
         function getDateKey(date) {
-            const d = new Date(date);
+            let d;
+            if (date && date.seconds) {
+                d = new Date(date.seconds * 1000);
+            } else {
+                d = new Date(date);
+            }
             return d.toISOString().split('T')[0];
         }
 
