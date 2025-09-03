@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cleartranscript.co - Voice-to-Text Transcription</title>
+    <title>ClearTranscript</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,6 +12,7 @@
     <meta name="theme-color" content="#ffffff">
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon-192x192.png">
+    <link id="favicon" rel="icon" type="image/svg+xml" href="/icons/favicon-idle.svg">
     <style>
         :root {
             /* Light theme variables */
@@ -951,6 +952,45 @@
         const yesterdaySummaryButton = document.getElementById('yesterday-summary-button');
         const todaySummaryBox = document.getElementById('today-summary-box');
         const yesterdaySummaryBox = document.getElementById('yesterday-summary-box');
+        const faviconEl = document.getElementById('favicon');
+
+        const baseTitle = 'ClearTranscript';
+        const icons = {
+            idle: '/icons/favicon-idle.svg',
+            recording: '/icons/favicon-recording.svg',
+            processing: '/icons/favicon-processing.svg'
+        };
+        let titleBlinkInterval = null;
+
+        function setFavicon(state) {
+            faviconEl.href = icons[state] || icons.idle;
+        }
+
+        function setTitle(text) {
+            document.title = text;
+        }
+
+        function startRecordingBlink() {
+            const recordingTitle = '● Recording — ' + baseTitle;
+            const altTitle = 'Recording — ' + baseTitle;
+            let showDot = true;
+            setTitle(recordingTitle);
+            titleBlinkInterval = setInterval(() => {
+                setTitle(showDot ? altTitle : recordingTitle);
+                showDot = !showDot;
+            }, 1000);
+        }
+
+        function stopRecordingBlink() {
+            if (titleBlinkInterval) {
+                clearInterval(titleBlinkInterval);
+                titleBlinkInterval = null;
+            }
+        }
+
+        // Initialize default state
+        setFavicon('idle');
+        setTitle(baseTitle);
 
         // State
         let recordings = []; // Array to store recording objects
@@ -1142,10 +1182,13 @@
             // Show loading indicator
             loadingIndicator.style.display = 'flex';
             uploadArea.classList.add('upload-area--uploading');
+            setTitle('Uploading… — ' + baseTitle);
+            setFavicon('processing');
 
             try {
                 // Step 1: Upload the audio and get the audioURL
                 const audioURL = await window.app.uploadAudio(file);
+                setTitle('Transcribing… — ' + baseTitle);
                 
                 // Step 2: Create initial recording object
                 const initialTitle = generateLocalTitle(file.name);
@@ -1171,6 +1214,7 @@
 
                 // Step 5: Generate AI title in the background and update both card and modal
                 loadingIndicator.textContent = "Generating title...";
+                setTitle('Generating title… — ' + baseTitle);
                 const aiTitle = await window.app.generateTitle(transcript);
                 recording.title = aiTitle;
                 modalTitle.textContent = aiTitle;
@@ -1184,14 +1228,22 @@
 
                 // Step 7: Update URL
                 openModal(0);
-                
+
         const url = new URL(window.location);
         url.searchParams.set('id', recordingId);
         window.history.pushState({}, '', url);
 
+                setTitle('✓ Transcript ready — ' + baseTitle);
+                setTimeout(() => {
+                    setFavicon('idle');
+                    setTitle(baseTitle);
+                }, 5000);
+
             } catch (error) {
                 console.error('Error in saveRecording:', error);
                 alert('An error occurred while processing your recording.');
+                setFavicon('idle');
+                setTitle(baseTitle);
             } finally {
                 // Clean up
                 uploadArea.classList.remove('upload-area--uploading');
@@ -1537,7 +1589,7 @@
 
             try {
                 await requestWakeLock();  // Request Wake Lock when recording starts
-                
+
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 mediaRecorder = new MediaRecorder(stream);
                 mediaRecorder.start();
@@ -1547,6 +1599,9 @@
                 recordButton.classList.add('recording');
                 recordButton.innerHTML = '<div class="recording-indicator"></div> 0:00';
                 recordedChunks = [];
+
+                setFavicon('recording');
+                startRecordingBlink();
 
                 // Update recording time every second
                 recordingInterval = setInterval(() => {
@@ -1563,6 +1618,9 @@
                 }
 
                 mediaRecorder.onstop = function() {
+                    stopRecordingBlink();
+                    setFavicon('processing');
+                    setTitle('Uploading… — ' + baseTitle);
                     loadingIndicator.style.display = 'flex';
                     const blob = new Blob(recordedChunks, { type: 'audio/mp3' });
                     saveRecording(blob);
@@ -1584,6 +1642,7 @@
             recordButton.classList.remove('recording');
             recordButton.textContent = 'Record';
             releaseWakeLock();  // Release Wake Lock when recording stops
+            stopRecordingBlink();
         }
 
         async function handleSummaryClick(section) {
