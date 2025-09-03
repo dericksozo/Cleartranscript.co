@@ -958,7 +958,8 @@
         const icons = {
             idle: '/icons/favicon-idle.svg',
             recording: '/icons/favicon-recording.svg',
-            processing: '/icons/favicon-processing.svg'
+            processing: '/icons/favicon-processing.svg',
+            complete: '/icons/favicon-complete.svg'
         };
         let titleBlinkInterval = null;
 
@@ -1233,6 +1234,7 @@
         url.searchParams.set('id', recordingId);
         window.history.pushState({}, '', url);
 
+                setFavicon('complete');
                 setTitle('✓ Transcript ready — ' + baseTitle);
                 setTimeout(() => {
                     setFavicon('idle');
