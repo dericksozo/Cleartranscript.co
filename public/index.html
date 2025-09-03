@@ -874,8 +874,10 @@
 
         /* Generates an AI title using your preferred API */
         function generateTitle(transcript) {
-            return new Promise(async (resolve, reject) => {
-                try {
+            return new Promise(async (resolve) => {
+                const maxAttempts = 3;
+
+                async function requestTitle() {
                     const response = await fetch('https://cleartranscript-api.deno.dev/title', {
                         method: 'POST',
                         headers: {
@@ -887,12 +889,22 @@
                         })
                     });
 
-                    const title = await response.text();
-                    resolve(title.trim());
-                } catch (error) {
-                    console.error('Error generating AI title:', error);
-                    reject(error);
+                    return (await response.text()).trim();
                 }
+
+                for (let attempt = 0; attempt < maxAttempts; attempt++) {
+                    try {
+                        const title = await requestTitle();
+                        if (title !== 'Internal Server Error') {
+                            return resolve(title);
+                        }
+                    } catch (error) {
+                        console.error('Error generating AI title:', error);
+                    }
+                }
+
+                // Fallback to a locally generated title if all attempts fail
+                resolve(generateLocalTitle(transcript));
             });
         }
 
@@ -1038,9 +1050,11 @@
             loadingIndicator.style.display = 'none'; // Hide the loading indicator
         }
 
-        function generateLocalTitle(transcript) {
-            if (transcript) {
-                return transcript;
+        function generateLocalTitle(text) {
+            if (typeof text === 'string' && text.trim()) {
+                const cleaned = text.replace(/\.[^/.]+$/, '').trim();
+                const words = cleaned.split(/\s+/).slice(0, 5);
+                return words.join(' ') + (words.length >= 5 ? '...' : '');
             } else {
                 return "New Recording";
             }
