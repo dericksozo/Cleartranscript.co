@@ -1236,11 +1236,7 @@
 
                 setFavicon('complete');
                 setTitle('✓ Transcript ready — ' + baseTitle);
-                setTimeout(() => {
-                    setFavicon('idle');
-                    setTitle(baseTitle);
-                }, 5000);
-
+                
             } catch (error) {
                 console.error('Error in saveRecording:', error);
                 alert('An error occurred while processing your recording.');
