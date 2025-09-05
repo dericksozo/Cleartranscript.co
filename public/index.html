@@ -533,6 +533,24 @@
 
         }
 
+        .pending-audio {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #ffe5e5;
+            border: 1px solid #f03;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            display: none;
+        }
+
+        .pending-audio button {
+            margin-left: 8px;
+            padding: 2px 6px;
+            cursor: pointer;
+        }
+
         .load-all-button {
             display: none;
             margin: 20px auto;
@@ -571,8 +589,13 @@
         <h1>
             ClearTranscript.co
         </h1>
-        
+
         <div class="loading-indicator" id="loading-indicator">Uploading audio...</div>
+
+        <div class="pending-audio" id="pending-audio-notice">
+            Upload failed. Audio saved locally.
+            <button id="reupload-button">Re-upload</button>
+        </div>
 
         <div class="upload-area" id="upload-area">
             <input type="file" id="file-input" accept="audio/*">
@@ -947,6 +970,8 @@
         const copyButton = document.getElementById('copy-button');
         const chatGPTButton = document.getElementById('chatgpt-button');
         const loadingIndicator = document.getElementById('loading-indicator');
+        const pendingAudioNotice = document.getElementById('pending-audio-notice');
+        const reuploadButton = document.getElementById('reupload-button');
         const loadAllButton = document.getElementById('load-all-button');
         const todaySummaryButton = document.getElementById('today-summary-button');
         const yesterdaySummaryButton = document.getElementById('yesterday-summary-button');
@@ -1177,6 +1202,37 @@
             return 'Invalid Date';
         }
 
+        function saveAudioLocally(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    try {
+                        localStorage.setItem('pendingAudio', reader.result);
+                        resolve();
+                    } catch (e) {
+                        reject(e);
+                    }
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function getSavedAudio() {
+            const dataUrl = localStorage.getItem('pendingAudio');
+            if (!dataUrl) return null;
+            const response = await fetch(dataUrl);
+            return await response.blob();
+        }
+
+        function showPendingAudioNotice() {
+            pendingAudioNotice.style.display = 'block';
+        }
+
+        function hidePendingAudioNotice() {
+            pendingAudioNotice.style.display = 'none';
+        }
+
         /* Uploads an audio file (or blob) to Firebase Storage, generates a title, generates a transcript with LemonFox's API, and saves the recording to the recordings array. */
         async function saveRecording(file) {
 
@@ -1187,10 +1243,13 @@
             setFavicon('processing');
 
             try {
+                // Step 0: Save audio locally before attempting upload
+                await saveAudioLocally(file);
+
                 // Step 1: Upload the audio and get the audioURL
                 const audioURL = await window.app.uploadAudio(file);
                 setTitle('Transcribing… — ' + baseTitle);
-                
+
                 // Step 2: Create initial recording object
                 const initialTitle = generateLocalTitle(file.name);
                 const date = new Date().toISOString();
@@ -1226,6 +1285,8 @@
                 // Step 6: Save to DB with the new title
                 const recordingId = await window.app.saveRecordingToDB(recording);
                 recording.id = recordingId;
+                localStorage.removeItem('pendingAudio');
+                hidePendingAudioNotice();
 
                 // Step 7: Update URL
                 openModal(0);
@@ -1240,6 +1301,7 @@
             } catch (error) {
                 console.error('Error in saveRecording:', error);
                 alert('An error occurred while processing your recording.');
+                showPendingAudioNotice();
                 setFavicon('idle');
                 setTitle(baseTitle);
             } finally {
@@ -1541,7 +1603,7 @@
 
         function handleFiles(files) {
             console.log("handleFiles", files);
-            
+
             Array.from(files).forEach(async (file) => {
 
                 if (file.type.startsWith('audio/')) {
@@ -1550,6 +1612,17 @@
                     alert('Only audio files are supported.');
                 }
             });
+        }
+
+        reuploadButton.addEventListener('click', async () => {
+            const blob = await getSavedAudio();
+            if (blob) {
+                await saveRecording(blob);
+            }
+        });
+
+        if (localStorage.getItem('pendingAudio')) {
+            showPendingAudioNotice();
         }
 
         // Recording Handlers
