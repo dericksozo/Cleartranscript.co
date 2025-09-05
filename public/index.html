@@ -548,8 +548,9 @@
             z-index: 2000;
         }
 
-        .pending-audio button {
-            padding: 2px 6px;
+        .pending-audio a {
+            color: #0645ad;
+            text-decoration: underline;
             cursor: pointer;
         }
 
@@ -596,7 +597,8 @@
 
         <div class="pending-audio" id="pending-audio-notice">
             Upload failed. Audio saved locally.
-            <button id="reupload-button">Re-upload</button>
+            <a href="#" id="reupload-link">Re-upload</a>
+            <a href="#" id="download-audio-link">Download current audio</a>
         </div>
 
         <div class="upload-area" id="upload-area">
@@ -989,7 +991,8 @@
         const chatGPTButton = document.getElementById('chatgpt-button');
         const loadingIndicator = document.getElementById('loading-indicator');
         const pendingAudioNotice = document.getElementById('pending-audio-notice');
-        const reuploadButton = document.getElementById('reupload-button');
+        const reuploadLink = document.getElementById('reupload-link');
+        const downloadAudioLink = document.getElementById('download-audio-link');
         const loadAllButton = document.getElementById('load-all-button');
         const todaySummaryButton = document.getElementById('today-summary-button');
         const yesterdaySummaryButton = document.getElementById('yesterday-summary-button');
@@ -1634,11 +1637,28 @@
             });
         }
 
-        reuploadButton.addEventListener('click', async () => {
+        reuploadLink.addEventListener('click', async (e) => {
+            e.preventDefault();
             hidePendingAudioNotice();
             const blob = await getSavedAudio();
             if (blob) {
                 await saveRecording(blob);
+            }
+        });
+
+        downloadAudioLink.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const blob = await getSavedAudio();
+            if (blob) {
+                const url = URL.createObjectURL(blob);
+                const extension = blob.type.split('/')[1] || 'webm';
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `audio.${extension}`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
             }
         });
 
