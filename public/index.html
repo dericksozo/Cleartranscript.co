@@ -1494,7 +1494,11 @@
             modal.style.display = 'none';
             const url = new URL(window.location);
             url.searchParams.delete('id');
-            
+
+            // Reset favicon and title when modal is closed
+            setFavicon('idle');
+            setTitle(baseTitle);
+
             if (loadedWithRecordingId) {
                 // Refresh the page if we initially loaded with an ID
                 window.location.href = url.toString();
