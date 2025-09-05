@@ -737,6 +737,11 @@
                     reject("No file provided");
                     return;
                 }
+
+                if (!navigator.onLine) {
+                    reject(new Error('Network disconnected'));
+                    return;
+                }
                 
                 // Generate a unique filename
                 const timestamp = Date.now();
@@ -749,17 +754,28 @@
 
                 // Start the file upload
                 const uploadTask = uploadBytesResumable(storageRef, file);
-                
+
+                // Cancel and reject if the connection drops
+                const handleOffline = () => {
+                    uploadTask.cancel();
+                    window.removeEventListener('offline', handleOffline);
+                    reject(new Error('Network disconnected'));
+                };
+
+                window.addEventListener('offline', handleOffline);
+
                 // Listen for state changes, errors, and completion
-                uploadTask.on('state_changed', 
+                uploadTask.on('state_changed',
                     (snapshot) => {
                         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                         console.log(`Upload is ${progress}% done`);
-                    }, 
+                    },
                     (error) => {
+                        window.removeEventListener('offline', handleOffline);
                         reject(error);
-                    }, 
+                    },
                     () => {
+                        window.removeEventListener('offline', handleOffline);
                         // Get the download URL after successful upload
                         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                             resolve(downloadURL);
