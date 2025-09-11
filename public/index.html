@@ -608,9 +608,9 @@
         <div class="loading-indicator" id="loading-indicator">Uploading audio...</div>
 
         <div class="pending-audio" id="pending-audio-notice">
-            Upload failed. Audio saved locally.
-            <a href="#" id="reupload-link">Re-upload</a>
-            <a href="#" id="download-audio-link">Download current audio</a>
+            Upload failed. You can retry or download your audio.
+            <a href="#" id="reupload-link">Retry upload</a>
+            <a href="#" id="download-audio-link">Download audio</a>
         </div>
 
         <div class="upload-area" id="upload-area">
@@ -1032,6 +1032,7 @@
         const yesterdaySummaryBox = document.getElementById('yesterday-summary-box');
         const faviconEl = document.getElementById('favicon');
 
+        let failedAudioBlob = null;
         const baseTitle = 'ClearTranscript';
         const icons = {
             idle: '/icons/favicon-idle.svg',
@@ -1272,29 +1273,6 @@
             return 'Invalid Date';
         }
 
-        function saveAudioLocally(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    try {
-                        localStorage.setItem('pendingAudio', reader.result);
-                        resolve();
-                    } catch (e) {
-                        reject(e);
-                    }
-                };
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        }
-
-        async function getSavedAudio() {
-            const dataUrl = localStorage.getItem('pendingAudio');
-            if (!dataUrl) return null;
-            const response = await fetch(dataUrl);
-            return await response.blob();
-        }
-
         function showPendingAudioNotice() {
             pendingAudioNotice.style.display = 'flex';
         }
@@ -1306,6 +1284,9 @@
         /* Uploads an audio file (or blob) to Firebase Storage, generates a title, generates a transcript with LemonFox's API, and saves the recording to the recordings array. */
         async function saveRecording(file) {
 
+            failedAudioBlob = file;
+            hidePendingAudioNotice();
+
             // Show loading indicator
             loadingIndicator.style.display = 'flex';
             uploadArea.classList.add('upload-area--uploading');
@@ -1313,14 +1294,11 @@
             setFavicon('processing');
 
             try {
-                // Step 0: Save audio locally before attempting upload
-                await saveAudioLocally(file);
-
-                // Step 1: Upload the audio and get the audioURL
+                // Upload the audio and get the audioURL
                 const audioURL = await window.app.uploadAudio(file);
                 setTitle('Transcribing… — ' + baseTitle);
 
-                // Step 2: Create initial recording object
+                // Create initial recording object
                 const initialTitle = generateLocalTitle(file.name);
                 const date = new Date().toISOString();
                 const recording = {
@@ -1334,16 +1312,16 @@
                 recordings.push(recording);
                 renderRecordings();
 
-                // Step 3: Process the transcript
+                // Process the transcript
                 loadingIndicator.textContent = "Processing transcript...";
                 const transcript = await window.app.processTranscript(audioURL);
                 recording.transcript = transcript;
                 renderRecordings();
 
-                // Step 4: Show the modal immediately after transcript is ready
+                // Show the modal immediately after transcript is ready
                 openModal(0, { updateURL: false });
 
-                // Step 5: Generate AI title in the background and update both card and modal
+                // Generate AI title in the background and update both card and modal
                 loadingIndicator.textContent = "Generating title...";
                 setTitle('Generating title… — ' + baseTitle);
                 const aiTitle = await window.app.generateTitle(transcript);
@@ -1353,13 +1331,13 @@
 
                 loadingIndicator.textContent = "Saving recording...";
 
-                // Step 6: Save to DB with the new title
+                // Save to DB with the new title
                 const recordingId = await window.app.saveRecordingToDB(recording);
                 recording.id = recordingId;
-                localStorage.removeItem('pendingAudio');
+                failedAudioBlob = null;
                 hidePendingAudioNotice();
 
-                // Step 7: Update URL
+                // Update URL
                 openModal(0);
 
         const url = new URL(window.location);
@@ -1368,7 +1346,7 @@
 
                 setFavicon('complete');
                 setTitle('✓ Transcript ready — ' + baseTitle);
-                
+
             } catch (error) {
                 console.error('Error in saveRecording:', error);
                 alert('An error occurred while processing your recording.');
@@ -1378,9 +1356,6 @@
             } finally {
                 uploadArea.classList.remove('upload-area--uploading');
                 loadingIndicator.style.display = 'none';
-                if (localStorage.getItem('pendingAudio')) {
-                    showPendingAudioNotice();
-                }
             }
         }
 
@@ -1692,18 +1667,16 @@
         reuploadLink.addEventListener('click', async (e) => {
             e.preventDefault();
             hidePendingAudioNotice();
-            const blob = await getSavedAudio();
-            if (blob) {
-                await saveRecording(blob);
+            if (failedAudioBlob) {
+                await saveRecording(failedAudioBlob);
             }
         });
 
-        downloadAudioLink.addEventListener('click', async (e) => {
+        downloadAudioLink.addEventListener('click', (e) => {
             e.preventDefault();
-            const blob = await getSavedAudio();
-            if (blob) {
-                const url = URL.createObjectURL(blob);
-                const extension = blob.type.split('/')[1] || 'webm';
+            if (failedAudioBlob) {
+                const url = URL.createObjectURL(failedAudioBlob);
+                const extension = failedAudioBlob.type.split('/')[1] || 'webm';
                 const a = document.createElement('a');
                 a.href = url;
                 a.download = `audio.${extension}`;
@@ -1713,10 +1686,6 @@
                 URL.revokeObjectURL(url);
             }
         });
-
-        if (localStorage.getItem('pendingAudio')) {
-            showPendingAudioNotice();
-        }
 
         // Recording Handlers
         recordButton.addEventListener('click', () => {
