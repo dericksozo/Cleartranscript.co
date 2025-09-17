@@ -545,27 +545,6 @@
 
         }
 
-        .pending-audio {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: #ffe5e5;
-            border: 1px solid #f03;
-            border-radius: 4px;
-            padding: 4px 8px;
-            font-size: 0.8rem;
-            display: none;
-            align-items: center;
-            gap: 8px;
-            z-index: 2000;
-        }
-
-        .pending-audio a {
-            color: #0645ad;
-            text-decoration: underline;
-            cursor: pointer;
-        }
-
         .load-all-button {
             display: none;
             margin: 20px auto;
@@ -606,12 +585,6 @@
         </h1>
 
         <div class="loading-indicator" id="loading-indicator">Uploading audio...</div>
-
-        <div class="pending-audio" id="pending-audio-notice">
-            Upload failed. You can retry or download your audio.
-            <a href="#" id="reupload-link">Retry upload</a>
-            <a href="#" id="download-audio-link">Download audio</a>
-        </div>
 
         <div class="upload-area" id="upload-area">
             <input type="file" id="file-input" accept="audio/*">
@@ -1022,9 +995,6 @@
         const copyCountEl = document.getElementById('copy-count');
         const chatGPTButton = document.getElementById('chatgpt-button');
         const loadingIndicator = document.getElementById('loading-indicator');
-        const pendingAudioNotice = document.getElementById('pending-audio-notice');
-        const reuploadLink = document.getElementById('reupload-link');
-        const downloadAudioLink = document.getElementById('download-audio-link');
         const loadAllButton = document.getElementById('load-all-button');
         const todaySummaryButton = document.getElementById('today-summary-button');
         const yesterdaySummaryButton = document.getElementById('yesterday-summary-button');
@@ -1032,7 +1002,6 @@
         const yesterdaySummaryBox = document.getElementById('yesterday-summary-box');
         const faviconEl = document.getElementById('favicon');
 
-        let failedAudioBlob = null;
         const baseTitle = 'ClearTranscript';
         const icons = {
             idle: '/icons/favicon-idle.svg',
@@ -1273,19 +1242,8 @@
             return 'Invalid Date';
         }
 
-        function showPendingAudioNotice() {
-            pendingAudioNotice.style.display = 'flex';
-        }
-
-        function hidePendingAudioNotice() {
-            pendingAudioNotice.style.display = 'none';
-        }
-
         /* Uploads an audio file (or blob) to Firebase Storage, generates a title, generates a transcript with LemonFox's API, and saves the recording to the recordings array. */
         async function saveRecording(file) {
-
-            failedAudioBlob = file;
-            hidePendingAudioNotice();
 
             // Show loading indicator
             loadingIndicator.style.display = 'flex';
@@ -1334,15 +1292,13 @@
                 // Save to DB with the new title
                 const recordingId = await window.app.saveRecordingToDB(recording);
                 recording.id = recordingId;
-                failedAudioBlob = null;
-                hidePendingAudioNotice();
 
                 // Update URL
                 openModal(0);
 
-        const url = new URL(window.location);
-        url.searchParams.set('id', recordingId);
-        window.history.pushState({}, '', url);
+                const url = new URL(window.location);
+                url.searchParams.set('id', recordingId);
+                window.history.pushState({}, '', url);
 
                 setFavicon('complete');
                 setTitle('✓ Transcript ready — ' + baseTitle);
@@ -1350,7 +1306,6 @@
             } catch (error) {
                 console.error('Error in saveRecording:', error);
                 alert('An error occurred while processing your recording.');
-                showPendingAudioNotice();
                 setFavicon('idle');
                 setTitle(baseTitle);
             } finally {
@@ -1362,13 +1317,6 @@
         function loadRecordings(data) {
             // Initialize recordings with mockData
             recordings = data;
-
-            // Optionally, load additional recordings from localStorage
-            // const stored = localStorage.getItem('recordings');
-            // if (stored) {
-            //     const storedRecordings = JSON.parse(stored);
-            //     recordings = recordings.concat(storedRecordings);
-            // }
 
             renderRecordings();
         }
@@ -1663,29 +1611,6 @@
                 }
             });
         }
-
-        reuploadLink.addEventListener('click', async (e) => {
-            e.preventDefault();
-            hidePendingAudioNotice();
-            if (failedAudioBlob) {
-                await saveRecording(failedAudioBlob);
-            }
-        });
-
-        downloadAudioLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (failedAudioBlob) {
-                const url = URL.createObjectURL(failedAudioBlob);
-                const extension = failedAudioBlob.type.split('/')[1] || 'webm';
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `audio.${extension}`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }
-        });
 
         // Recording Handlers
         recordButton.addEventListener('click', () => {
