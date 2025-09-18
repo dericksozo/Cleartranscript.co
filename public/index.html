@@ -285,6 +285,9 @@
             cursor: pointer;
             transition: transform 0.2s;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .card:hover {
@@ -308,15 +311,105 @@
             line-height: 1.4;
         }
 
-        .card .copy-card-button {
-            display: block;
-            opacity: 0;
-            cursor: pointer;
+        .card-footer {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 12px;
         }
 
-        .card:hover .copy-card-button {
-            display: block;
+        .card-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-todos-indicator {
+            width: 28px;
+            height: 28px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            background-color: rgba(0, 0, 0, 0.04);
+            opacity: 0;
+            transition: opacity 0.2s, background-color 0.2s, color 0.2s;
+        }
+
+        .card-todos-indicator svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .card-todos-indicator--visible {
+            opacity: 0.65;
+        }
+
+        .card:hover .card-todos-indicator--visible,
+        .card:focus-within .card-todos-indicator--visible {
             opacity: 1;
+            background-color: rgba(0, 0, 0, 0.08);
+        }
+
+        .card-todos-indicator--loading {
+            opacity: 1;
+        }
+
+        .card-todos-indicator-spinner {
+            display: none;
+            width: 14px;
+            height: 14px;
+            border: 2px solid currentColor;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .card-todos-indicator-icon,
+        .card-todos-indicator-error {
+            display: none;
+        }
+
+        .card-todos-indicator--ready .card-todos-indicator-icon {
+            display: block;
+        }
+
+        .card-todos-indicator--error {
+            color: #d14343;
+            background-color: rgba(209, 67, 67, 0.1);
+            opacity: 1;
+        }
+
+        .card-todos-indicator--error .card-todos-indicator-error {
+            display: block;
+            font-weight: 700;
+        }
+
+        .card-todos-indicator--error .card-todos-indicator-icon,
+        .card-todos-indicator--loading .card-todos-indicator-icon {
+            display: none;
+        }
+
+        .card-todos-indicator--loading .card-todos-indicator-spinner {
+            display: block;
+        }
+
+        .card .copy-card-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            cursor: pointer;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .card:hover .copy-card-button,
+        .card:focus-within .copy-card-button {
+            opacity: 1;
+            pointer-events: auto;
         }
 
         /* Card Loading Placeholder */
@@ -427,11 +520,131 @@
             clear: both;
         }
 
-        .modal .transcript {
+        .modal-tabs {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .modal-tab {
+            border: 1px solid var(--border-color);
+            background-color: transparent;
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 999px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+        }
+
+        .modal-tab[disabled],
+        .modal-tab.modal-tab--disabled {
+            cursor: not-allowed;
+            color: var(--text-secondary);
+            border-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .modal-tab.modal-tab--active {
+            background-color: var(--text-primary);
+            color: var(--bg-primary);
+            border-color: var(--text-primary);
+        }
+
+        .modal-tab.modal-tab--error {
+            border-color: #d14343;
+            color: #d14343;
+        }
+
+        .modal-tab.modal-tab--error.modal-tab--active {
+            background-color: #d14343;
+            color: #fff;
+        }
+
+        .modal-tab-icon {
+            display: none;
+            width: 16px;
+            height: 16px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-tab-icon--spinner {
+            border: 2px solid currentColor;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .modal-tab-icon--error {
+            font-weight: 700;
+        }
+
+        .modal-content {
+            margin-top: 16px;
+        }
+
+        .modal-panel {
+            display: none;
             margin-bottom: 20px;
             white-space: pre-wrap;
             line-height: 1.5;
             color: #000;
+        }
+
+        .modal-panel.modal-panel--active {
+            display: block;
+        }
+
+        .modal-todos-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .modal-todos-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-todos-text {
+            color: var(--text-primary);
+        }
+
+        .modal-todos-citation {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .modal-todos-message {
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+
+        .modal-todos-retry {
+            display: none;
+            margin-top: 12px;
+            align-self: flex-start;
+            padding: 6px 12px;
+            border-radius: 6px;
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        .modal-todos-retry:hover {
+            background-color: var(--hover-bg);
         }
 
         .modal audio {
@@ -687,8 +900,26 @@
                     Your browser does not support the audio element.
                 </audio>
             </div>
+            <div class="modal-tabs" id="modal-tabs" role="tablist">
+                <button type="button" class="modal-tab modal-tab--active" data-tab="transcript" id="transcript-tab" role="tab" aria-selected="true" aria-controls="modal-transcript">Transcript</button>
+                <button type="button" class="modal-tab modal-tab--disabled" data-tab="todos" id="todos-tab" role="tab" aria-selected="false" aria-controls="modal-todos" disabled>
+                    <span class="modal-tab-label">To-dos</span>
+                    <span class="modal-tab-icon modal-tab-icon--spinner" id="todos-tab-spinner" aria-hidden="true"></span>
+                    <span class="modal-tab-icon modal-tab-icon--ready" id="todos-tab-ready" aria-hidden="true">
+                        <svg viewBox="0 0 20 20" width="16" height="16" fill="currentColor" aria-hidden="true">
+                            <path d="M4 4.75A.75.75 0 0 1 4.75 4h10.5a.75.75 0 0 1 0 1.5H4.75A.75.75 0 0 1 4 4.75Zm0 3.5A.75.75 0 0 1 4.75 7h4.5a.75.75 0 0 1 0 1.5h-4.5A.75.75 0 0 1 4 8.25Zm0 3.5a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Zm10.78-1.28a.75.75 0 0 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0l-1.25-1.25a.75.75 0 0 1 1.06-1.06l.72.72Z"></path>
+                        </svg>
+                    </span>
+                    <span class="modal-tab-icon modal-tab-icon--error" id="todos-tab-error" aria-hidden="true">!</span>
+                </button>
+            </div>
             <div class="modal-content">
-                <div class="transcript" id="modal-transcript">Full transcript goes here...</div>
+                <div class="modal-panel modal-panel--active" id="modal-transcript" role="tabpanel" aria-labelledby="transcript-tab">Full transcript goes here...</div>
+                <div class="modal-panel" id="modal-todos" role="tabpanel" aria-labelledby="todos-tab" aria-live="polite">
+                    <div class="modal-todos-message" id="modal-todos-message">To-dos will appear here once they are ready.</div>
+                    <ul class="modal-todos-list" id="modal-todos-list"></ul>
+                    <button type="button" class="modal-todos-retry" id="modal-todos-retry">Retry generating to-dos</button>
+                </div>
             </div>
         </div>
     </div>
@@ -955,6 +1186,45 @@
             });
         }
 
+        function generateTodos(transcript) {
+            return new Promise(async (resolve) => {
+                if (!transcript || typeof transcript !== 'string' || !transcript.trim()) {
+                    resolve([]);
+                    return;
+                }
+
+                const maxAttempts = 2;
+
+                async function requestTodos() {
+                    const response = await fetch('https://cleartranscript-api.deno.dev/todos', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Origin': window.location.origin
+                        },
+                        body: JSON.stringify({ transcript })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to generate to-dos');
+                    }
+
+                    return response.json();
+                }
+
+                for (let attempt = 0; attempt < maxAttempts; attempt++) {
+                    try {
+                        const todos = await requestTodos();
+                        return resolve(todos);
+                    } catch (error) {
+                        console.error('Error generating to-dos:', error);
+                    }
+                }
+
+                resolve(generateLocalTodos(transcript));
+            });
+        }
+
         window.app = {
             uploadAudio,
             processTranscript,
@@ -964,6 +1234,7 @@
             updateRecordingInDB,
             updateCopyCountInDB,
             generateTitle,
+            generateTodos,
             getSummaryFromDB,
             saveSummaryToDB
         };
@@ -990,6 +1261,17 @@
         const modalTitle = document.getElementById('modal-title');
         const recordingDate = document.getElementById('recording-date');
         const modalTranscript = document.getElementById('modal-transcript');
+        const modalTabs = document.getElementById('modal-tabs');
+        const modalTabButtons = modalTabs ? Array.from(modalTabs.querySelectorAll('.modal-tab')) : [];
+        const transcriptTab = document.getElementById('transcript-tab');
+        const todosTab = document.getElementById('todos-tab');
+        const todosTabSpinner = document.getElementById('todos-tab-spinner');
+        const todosTabReadyIcon = document.getElementById('todos-tab-ready');
+        const todosTabError = document.getElementById('todos-tab-error');
+        const modalTodos = document.getElementById('modal-todos');
+        const modalTodosList = document.getElementById('modal-todos-list');
+        const modalTodosMessage = document.getElementById('modal-todos-message');
+        const modalTodosRetry = document.getElementById('modal-todos-retry');
         const modalAudio = document.getElementById('modal-audio');
         const copyButton = document.getElementById('copy-button');
         const copyCountEl = document.getElementById('copy-count');
@@ -1050,6 +1332,8 @@
         let recordingInterval;
         let loadedWithRecordingId = false;
         let summaries = {};
+        let activeModalTab = 'transcript';
+        let activeRecording = null;
         const copyUpdateTimers = {};
         const summaryIconSVG = `
             <svg class="summary-icon" viewBox="0 0 1024 1024" width="1em" height="1em" xmlns="http://www.w3.org/2000/svg">
@@ -1065,9 +1349,237 @@
             }, 1000);
         }
 
+        function ensureRecordingDefaults(recording) {
+            if (!recording) {
+                return recording;
+            }
+
+            if (!Array.isArray(recording.todos)) {
+                recording.todos = [];
+            }
+
+            if (typeof recording.todosReady !== 'boolean') {
+                recording.todosReady = recording.todos.length > 0;
+            }
+
+            if (!recording.todosStatus) {
+                recording.todosStatus = recording.todosReady ? 'ready' : 'idle';
+            }
+
+            return recording;
+        }
+
+        function normalizeTodosPayload(payload) {
+            if (!payload) {
+                return [];
+            }
+
+            let items = [];
+            if (Array.isArray(payload)) {
+                items = payload;
+            } else if (Array.isArray(payload.items)) {
+                items = payload.items;
+            } else if (Array.isArray(payload.todos)) {
+                items = payload.todos;
+            } else if (payload.data && Array.isArray(payload.data.todos)) {
+                items = payload.data.todos;
+            }
+
+            return items
+                .map((item) => {
+                    if (!item) {
+                        return null;
+                    }
+
+                    if (typeof item === 'string') {
+                        const text = item.trim();
+                        if (!text) {
+                            return null;
+                        }
+                        return { text, citation: text };
+                    }
+
+                    if (typeof item === 'object') {
+                        const text = (item.text || item.action || item.title || item.summary || '').toString().trim();
+                        const citation = (item.citation || item.reference || item.source || item.excerpt || '').toString().trim();
+
+                        if (!text) {
+                            return null;
+                        }
+
+                        return {
+                            text,
+                            citation: citation || text
+                        };
+                    }
+
+                    const fallback = String(item).trim();
+                    return fallback ? { text: fallback, citation: fallback } : null;
+                })
+                .filter(Boolean);
+        }
+
+        function setActiveModalTab(tabName) {
+            if (!modalTabs) {
+                return;
+            }
+
+            activeModalTab = tabName;
+
+            modalTabButtons.forEach((button) => {
+                const isActive = button.dataset.tab === tabName;
+                button.classList.toggle('modal-tab--active', isActive);
+                button.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            });
+
+            if (modalTranscript) {
+                modalTranscript.classList.toggle('modal-panel--active', tabName === 'transcript');
+            }
+
+            if (modalTodos) {
+                modalTodos.classList.toggle('modal-panel--active', tabName === 'todos');
+            }
+        }
+
+        function updateTodosTab(recording) {
+            if (!todosTab) {
+                return;
+            }
+
+            const status = recording ? recording.todosStatus : 'idle';
+            const isLoading = status === 'loading';
+            const isReady = status === 'ready';
+            const isError = status === 'error';
+            const disabled = !(isReady || isError);
+
+            todosTab.disabled = disabled;
+            todosTab.classList.toggle('modal-tab--disabled', disabled);
+            todosTab.classList.toggle('modal-tab--error', isError);
+            todosTab.setAttribute('aria-disabled', disabled ? 'true' : 'false');
+            todosTab.setAttribute('aria-busy', isLoading ? 'true' : 'false');
+
+            if (todosTabSpinner) {
+                todosTabSpinner.style.display = isLoading ? 'inline-flex' : 'none';
+            }
+
+            if (todosTabReadyIcon) {
+                todosTabReadyIcon.style.display = isReady ? 'inline-flex' : 'none';
+            }
+
+            if (todosTabError) {
+                todosTabError.style.display = isError ? 'inline-block' : 'none';
+            }
+        }
+
+        function updateModalTodos(recording) {
+            if (!modalTodos || !modalTodosMessage || !modalTodosList) {
+                return;
+            }
+
+            modalTodosList.innerHTML = '';
+            modalTodosMessage.style.display = 'block';
+            if (modalTodosRetry) {
+                modalTodosRetry.style.display = 'none';
+            }
+
+            if (!recording) {
+                modalTodosMessage.textContent = 'Select a note to see its to-dos.';
+                return;
+            }
+
+            const status = recording.todosStatus || 'idle';
+
+            if (status === 'loading') {
+                modalTodosMessage.textContent = 'Generating to-dos…';
+                return;
+            }
+
+            if (status === 'idle') {
+                modalTodosMessage.textContent = 'To-dos will appear here once they are ready.';
+                return;
+            }
+
+            if (status === 'error') {
+                modalTodosMessage.textContent = 'We ran into an issue while generating to-dos.';
+                if (modalTodosRetry) {
+                    modalTodosRetry.style.display = 'inline-flex';
+                }
+                return;
+            }
+
+            const todos = Array.isArray(recording.todos) ? recording.todos : [];
+            if (todos.length === 0) {
+                modalTodosMessage.textContent = 'No to-dos were found in this transcript.';
+                return;
+            }
+
+            modalTodosMessage.textContent = 'Action items identified:';
+
+            const fragment = document.createDocumentFragment();
+            todos.forEach((todo, index) => {
+                if (!todo) {
+                    return;
+                }
+
+                const item = document.createElement('li');
+                item.className = 'modal-todos-item';
+                item.dataset.todoIndex = index;
+
+                const text = document.createElement('span');
+                text.className = 'modal-todos-text';
+                text.textContent = (todo.text || '').trim();
+                item.appendChild(text);
+
+                if (todo.citation) {
+                    const citation = document.createElement('span');
+                    citation.className = 'modal-todos-citation';
+                    citation.textContent = todo.citation;
+                    item.appendChild(citation);
+                }
+
+                fragment.appendChild(item);
+            });
+
+            modalTodosList.appendChild(fragment);
+        }
+
+        if (modalTabButtons.length > 0) {
+            modalTabButtons.forEach((button) => {
+                button.addEventListener('click', () => {
+                    if (button.disabled || button.classList.contains('modal-tab--disabled')) {
+                        return;
+                    }
+
+                    const tab = button.dataset.tab;
+                    if (!tab) {
+                        return;
+                    }
+
+                    setActiveModalTab(tab);
+
+                    if (tab === 'todos') {
+                        updateModalTodos(activeRecording);
+                        if (activeRecording && activeRecording.todosStatus === 'idle') {
+                            startTodosGeneration(activeRecording);
+                        }
+                    }
+                });
+            });
+        }
+
+        if (modalTodosRetry) {
+            modalTodosRetry.addEventListener('click', () => {
+                if (!activeRecording) {
+                    return;
+                }
+                startTodosGeneration(activeRecording, { force: true });
+            });
+        }
+
+        updateTodosTab();
         function incrementCopyCount(recording) {
             recording.copyCount = (recording.copyCount || 0) + 1;
-            if (modal.style.display === 'flex' && recordings[modal.dataset.index] === recording) {
+            if (modal.style.display === 'flex' && activeRecording === recording) {
                 copyCountEl.textContent = recording.copyCount;
             }
             scheduleCopyCountUpdate(recording);
@@ -1139,9 +1651,11 @@
         });
 
          // Function to update the title in the database
-         async function updateTitleInDB(newTitle) {
-            const index = modal.dataset.index; // Get the current index
-            const recording = recordings[index]; // Get the current recording
+        async function updateTitleInDB(newTitle) {
+            const recording = activeRecording;
+            if (!recording) {
+                return;
+            }
             recording.title = newTitle; // Update the title in the local array
 
             // Update the loading indicator
@@ -1164,6 +1678,41 @@
             } else {
                 return "New Recording";
             }
+        }
+
+        function generateLocalTodos(transcript) {
+            if (typeof transcript !== 'string') {
+                return [];
+            }
+
+            const sentences = (transcript.match(/[^.!?]+[.!?]?/g) || [])
+                .map((sentence) => sentence.trim())
+                .filter(Boolean);
+
+            const triggers = [/need to/i, /should/i, /let['’]?s/i, /remember to/i, /action item/i, /follow up/i, /assign/i, /todo/i, /task/i];
+            const tasks = [];
+
+            sentences.forEach((sentence) => {
+                if (triggers.some((pattern) => pattern.test(sentence))) {
+                    const cleaned = sentence.replace(/^[-•\s]+/, '');
+                    tasks.push({
+                        text: cleaned,
+                        citation: sentence
+                    });
+                }
+            });
+
+            if (tasks.length === 0) {
+                const lines = transcript
+                    .split(/\n+/)
+                    .map((line) => line.trim())
+                    .filter(Boolean)
+                    .slice(0, 3);
+
+                return lines.map((line) => ({ text: line, citation: line }));
+            }
+
+            return tasks.slice(0, 10);
         }
 
         let isEditingTitle = false;
@@ -1264,7 +1813,10 @@
                     transcript: 'Processing transcript...',
                     audioURL,
                     date,
-                    copyCount: 0
+                    copyCount: 0,
+                    todos: [],
+                    todosStatus: 'idle',
+                    todosReady: false
                 };
 
                 recordings.push(recording);
@@ -1275,6 +1827,8 @@
                 const transcript = await window.app.processTranscript(audioURL);
                 recording.transcript = transcript;
                 renderRecordings();
+
+                startTodosGeneration(recording);
 
                 // Show the modal immediately after transcript is ready
                 openModal(0, { updateURL: false });
@@ -1316,7 +1870,7 @@
 
         function loadRecordings(data) {
             // Initialize recordings with mockData
-            recordings = data;
+            recordings = data.map((rec) => ensureRecordingDefaults(rec));
 
             renderRecordings();
         }
@@ -1330,13 +1884,14 @@
             loadAllButton.style.display = 'none';
             
             // Set recordings array to only contain this recording
-            recordings = [recording];
-            
+            recordings = [ensureRecordingDefaults(recording)];
+
             // Show only the modal with this recording
             openModal(0);
         }
 
         function renderRecordings() {
+            recordings = recordings.map((rec) => ensureRecordingDefaults(rec));
             const now = new Date();
             const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             const yesterday = new Date(today);
@@ -1372,29 +1927,69 @@
 
             // Function to create a card
             function createCard(rec, index) {
+                ensureRecordingDefaults(rec);
                 const card = document.createElement('div');
                 card.classList.add('card');
                 card.dataset.index = index;
 
-                const recDate = rec.date && rec.date.seconds 
-                    ? new Date(rec.date.seconds * 1000) 
+                const recDate = rec.date && rec.date.seconds
+                    ? new Date(rec.date.seconds * 1000)
                     : new Date(rec.date);
 
+                let indicatorHTML = '';
+                const todosTooltip = {
+                    loading: 'Generating to-dos…',
+                    readyWithItems: 'To-dos ready',
+                    readyEmpty: 'No to-dos found',
+                    error: 'Unable to generate to-dos'
+                };
+
+                if (rec.todosStatus && rec.todosStatus !== 'idle') {
+                    const classes = ['card-todos-indicator', 'tooltip'];
+                    let tooltip = '';
+
+                    if (rec.todosStatus === 'loading') {
+                        classes.push('card-todos-indicator--loading');
+                        tooltip = todosTooltip.loading;
+                    } else if (rec.todosStatus === 'ready') {
+                        classes.push('card-todos-indicator--ready', 'card-todos-indicator--visible');
+                        tooltip = (rec.todos && rec.todos.length) ? todosTooltip.readyWithItems : todosTooltip.readyEmpty;
+                    } else if (rec.todosStatus === 'error') {
+                        classes.push('card-todos-indicator--error');
+                        tooltip = todosTooltip.error;
+                    }
+
+                    indicatorHTML = `
+                        <div class="${classes.join(' ')}" data-tooltip="${tooltip}">
+                            <span class="card-todos-indicator-spinner" aria-hidden="true"></span>
+                            <svg class="card-todos-indicator-icon" viewBox="0 0 20 20" width="16" height="16" fill="currentColor" aria-hidden="true">
+                                <path d="M4 4.75A.75.75 0 0 1 4.75 4h10.5a.75.75 0 0 1 0 1.5H4.75A.75.75 0 0 1 4 4.75Zm0 3.5A.75.75 0 0 1 4.75 7h4.5a.75.75 0 0 1 0 1.5h-4.5A.75.75 0 0 1 4 8.25Zm0 3.5a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Zm10.78-1.28a.75.75 0 0 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0l-1.25-1.25a.75.75 0 0 1 1.06-1.06l.72.72Z"></path>
+                            </svg>
+                            <span class="card-todos-indicator-error" aria-hidden="true">!</span>
+                        </div>
+                    `.trim();
+                }
+
                 card.innerHTML = `
-                    <div class="flex-container flex-container--spaceBetween">
+                    <div class="card-header">
                         <h3>${rec.title}</h3>
-                        <button class="copy-card-button copy-button" data-tooltip="Copy" aria-label="Copy content">
-                            <svg aria-hidden="true" focusable="false" class="copy-button-copy" viewBox="0 0 16 16" width="16" height="16" fill="#000">
-                                <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path>
-                                <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
-                            </svg>
-                            <svg aria-hidden="true" focusable="false" class="copy-button-check" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
-                                <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
-                            </svg>
-                        </button>
                     </div>
                     <p>${rec.transcript.length > 292 ? rec.transcript.substring(0, 292) + '...' : rec.transcript}</p>
-                    <span class="card-time">${formatTime(recDate)}</span>
+                    <div class="card-footer">
+                        <span class="card-time">${formatTime(recDate)}</span>
+                        <div class="card-meta">
+                            ${indicatorHTML}
+                            <button class="copy-card-button copy-button" data-tooltip="Copy" aria-label="Copy content">
+                                <svg aria-hidden="true" focusable="false" class="copy-button-copy" viewBox="0 0 16 16" width="16" height="16" fill="#000">
+                                    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path>
+                                    <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+                                </svg>
+                                <svg aria-hidden="true" focusable="false" class="copy-button-check" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+                                    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
                 `;
 
                 const copyButton = card.querySelector('.copy-card-button');
@@ -1408,9 +2003,10 @@
                 });
 
                 card.addEventListener('click', (event) => {
-                    if (!event.target.classList.contains('copy-card-button')) {
-                        openModal(index);
+                    if (event.target.closest('.copy-card-button')) {
+                        return;
                     }
+                    openModal(index);
                 });
 
                 return card;
@@ -1491,6 +2087,13 @@
 
             loadingCards.closest('.section').classList.add('section--hidden');
 
+            if (activeRecording && modal.style.display === 'flex') {
+                const activeIndex = recordings.indexOf(activeRecording);
+                if (activeIndex !== -1) {
+                    modal.dataset.index = activeIndex;
+                }
+            }
+
         }
 
         // Helper function to format time
@@ -1530,22 +2133,80 @@
             box.style.display = 'block';
         }
 
+        async function startTodosGeneration(recording, { force = false } = {}) {
+            if (!recording) {
+                return;
+            }
+
+            ensureRecordingDefaults(recording);
+
+            if (!recording.transcript || !recording.transcript.trim()) {
+                return;
+            }
+
+            if (!force && (recording.todosStatus === 'loading' || recording.todosStatus === 'ready')) {
+                return;
+            }
+
+            recording.todosStatus = 'loading';
+            recording.todosReady = false;
+            if (activeRecording === recording) {
+                updateTodosTab(recording);
+                updateModalTodos(recording);
+            }
+            renderRecordings();
+
+            try {
+                const todosResponse = await window.app.generateTodos(recording.transcript);
+                const todos = normalizeTodosPayload(todosResponse);
+                recording.todos = todos;
+                recording.todosStatus = 'ready';
+                recording.todosReady = true;
+                recording.todosGeneratedAt = new Date().toISOString();
+            } catch (error) {
+                console.error('Error generating to-dos:', error);
+                recording.todosStatus = 'error';
+                recording.todosReady = false;
+            }
+
+            if (activeRecording === recording) {
+                updateTodosTab(recording);
+                updateModalTodos(recording);
+            }
+            renderRecordings();
+        }
+
         function openModal(index, { updateURL = true } = {}) {
-            const rec = recordings[index];
+            const rec = ensureRecordingDefaults(recordings[index]);
+            if (!rec) {
+                return;
+            }
+
+            activeRecording = rec;
+
             modalTitle.textContent = rec.title;
             recordingDate.textContent = formatDate(rec.date);
             modalTranscript.textContent = rec.transcript;
             modalAudio.src = rec.audioURL;
             modalAudio.playbackRate = 1.75;
             modal.dataset.index = index;
+            modal.dataset.recordingId = rec.id || '';
             copyCountEl.textContent = rec.copyCount || 0;
             modal.style.display = 'flex';
-            
+
+            setActiveModalTab('transcript');
+            updateTodosTab(rec);
+            updateModalTodos(rec);
+
             // Only update URL if requested and we have a recording ID
             if (updateURL && rec.id) {
                 const url = new URL(window.location);
                 url.searchParams.set('id', rec.id);
                 window.history.pushState({}, '', url);
+            }
+
+            if (rec.todosStatus === 'idle' && rec.transcript && !rec.transcript.toLowerCase().includes('processing transcript')) {
+                startTodosGeneration(rec);
             }
         }
 
@@ -1554,6 +2215,13 @@
             modal.style.display = 'none';
             const url = new URL(window.location);
             url.searchParams.delete('id');
+
+            activeRecording = null;
+            setActiveModalTab('transcript');
+            updateTodosTab();
+            updateModalTodos(null);
+            modal.dataset.index = '';
+            modal.dataset.recordingId = '';
 
             // Reset favicon and title when modal is closed
             setFavicon('idle');
@@ -1760,7 +2428,10 @@
 
         // Copy Transcript
         copyButton.addEventListener('click', () => {
-            const rec = recordings[modal.dataset.index];
+            const rec = activeRecording;
+            if (!rec) {
+                return;
+            }
             navigator.clipboard.writeText(modalTranscript.textContent).then(() => {
                 copyButton.classList.add('copied');
                 setTimeout(() => {
