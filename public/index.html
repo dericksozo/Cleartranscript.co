@@ -562,6 +562,366 @@
             justify-content: center;
         }
 
+        /* Modal Tabs */
+        .modal-tabs {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        .modal-tab {
+            background: none;
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .modal-tab:hover {
+            background-color: var(--hover-bg);
+        }
+
+        .modal-tab--active {
+            background-color: var(--text-primary);
+            color: var(--bg-primary);
+            border-color: var(--text-primary);
+        }
+
+        .modal-tab-count {
+            background-color: rgba(0, 0, 0, 0.1);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+
+        .modal-tab--active .modal-tab-count {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-tab-spinner {
+            width: 14px;
+            height: 14px;
+            border: 2px solid currentColor;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Modal Panels */
+        .modal-panel {
+            display: none;
+        }
+
+        .modal-panel--active {
+            display: block;
+        }
+
+        /* Todo List Styles */
+        .todo-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .todo-item--completed {
+            opacity: 0.6;
+        }
+
+        .todo-item--completed .todo-text {
+            text-decoration: line-through;
+        }
+
+        .todo-checkbox {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            margin-top: 2px;
+        }
+
+        .todo-checkbox:hover {
+            border-color: var(--text-primary);
+        }
+
+        .todo-checkbox--checked {
+            background-color: var(--text-primary);
+            border-color: var(--text-primary);
+        }
+
+        .todo-checkbox--checked svg {
+            display: block;
+        }
+
+        .todo-checkbox svg {
+            display: none;
+            width: 14px;
+            height: 14px;
+            fill: var(--bg-primary);
+        }
+
+        .todo-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .todo-text {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .todo-citation {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            cursor: pointer;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .todo-citation:hover {
+            color: var(--text-primary);
+        }
+
+        .todo-citation--expanded {
+            -webkit-line-clamp: unset;
+            display: block;
+        }
+
+        .todo-citation::before {
+            content: '"';
+        }
+
+        .todo-citation::after {
+            content: '"';
+        }
+
+        .todo-actions {
+            display: flex;
+            gap: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .todo-item:hover .todo-actions {
+            opacity: 1;
+        }
+
+        .todo-delete-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .todo-delete-btn:hover {
+            background-color: rgba(255, 0, 0, 0.1);
+            color: #e53935;
+        }
+
+        .todo-empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .todo-loading-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .todo-error-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #e53935;
+        }
+
+        .todo-generate-prompt {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .todo-generate-prompt p {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .generate-todos-btn {
+            background-color: var(--text-primary);
+            color: var(--bg-primary);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: opacity 0.2s;
+        }
+
+        .generate-todos-btn:hover {
+            opacity: 0.9;
+        }
+
+        .generate-todos-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Top-Level Action Items Section */
+        .action-items-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .action-item-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            box-shadow: 0 1px 3px var(--shadow-color);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .action-item-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+
+        .action-item-checkbox {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            margin-top: 2px;
+        }
+
+        .action-item-checkbox:hover {
+            border-color: var(--text-primary);
+        }
+
+        .action-item-checkbox--checked {
+            background-color: var(--text-primary);
+            border-color: var(--text-primary);
+        }
+
+        .action-item-checkbox--checked svg {
+            display: block;
+        }
+
+        .action-item-checkbox svg {
+            display: none;
+            width: 14px;
+            height: 14px;
+            fill: var(--bg-primary);
+        }
+
+        .action-item-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .action-item-text {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .action-item-source {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .action-item-source-title {
+            max-width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .action-item-source-date {
+            opacity: 0.7;
+        }
+
+        .action-item-delete {
+            opacity: 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .action-item-card:hover .action-item-delete {
+            opacity: 1;
+        }
+
+        .action-item-delete:hover {
+            background-color: rgba(255, 0, 0, 0.1);
+            color: #e53935;
+        }
+
+        .action-items-empty {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
         /* Responsive */
         @media (max-width: 600px) {
             .record-button {
@@ -595,6 +955,14 @@
 
     <!-- Sections -->
     <div class="sections">
+        <!-- Action Items Section -->
+        <div class="section section--hidden" id="action-items-section">
+            <h2>Action Items</h2>
+            <div class="action-items-list" id="action-items-list">
+                <!-- Action items will be inserted here -->
+            </div>
+        </div>
+
         <div class="section section--hidden" id="today-section">
             <div class="section-header">
                 <h2>Today</h2>
@@ -686,9 +1054,43 @@
                     <source src="" type="audio/mpeg">
                     Your browser does not support the audio element.
                 </audio>
+
+                <!-- Modal Tabs -->
+                <div class="modal-tabs" id="modal-tabs">
+                    <button class="modal-tab modal-tab--active" data-tab="transcript" id="tab-transcript">
+                        Transcript
+                    </button>
+                    <button class="modal-tab" data-tab="todos" id="tab-todos">
+                        Action Items
+                        <span class="modal-tab-count" id="tab-todos-count" style="display: none;">0</span>
+                        <span class="modal-tab-spinner" id="tab-todos-spinner" style="display: none;"></span>
+                    </button>
+                </div>
             </div>
             <div class="modal-content">
-                <div class="transcript" id="modal-transcript">Full transcript goes here...</div>
+                <!-- Transcript Panel -->
+                <div class="modal-panel modal-panel--active" id="panel-transcript">
+                    <div class="transcript" id="modal-transcript">Full transcript goes here...</div>
+                </div>
+
+                <!-- Action Items Panel -->
+                <div class="modal-panel" id="panel-todos">
+                    <div class="todo-loading-state" id="todos-loading" style="display: none;">
+                        <span class="modal-tab-spinner"></span>
+                        Extracting action items...
+                    </div>
+                    <div class="todo-error-state" id="todos-error" style="display: none;">
+                        Failed to extract action items. Please try again later.
+                    </div>
+                    <div class="todo-empty-state" id="todos-empty" style="display: none;">
+                        No action items found in this recording.
+                    </div>
+                    <div class="todo-generate-prompt" id="todos-generate-prompt" style="display: none;">
+                        <p>Action items haven't been extracted for this recording yet.</p>
+                        <button class="generate-todos-btn" id="generate-todos-btn">Extract Action Items</button>
+                    </div>
+                    <ul class="todo-list" id="todos-list"></ul>
+                </div>
             </div>
         </div>
     </div>
@@ -955,6 +1357,94 @@
             });
         }
 
+        /* Generates action items from a transcript using AI */
+        function generateTodos(transcript) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const response = await fetch('https://cleartranscript-api.deno.dev/todos', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Origin': window.location.origin
+                        },
+                        body: JSON.stringify({
+                            transcript: transcript
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to generate todos');
+                    }
+
+                    const data = await response.json();
+                    // API returns { todos: [{ text, citation }, ...] }
+                    resolve(data.todos || []);
+                } catch (error) {
+                    console.error('Error generating todos:', error);
+                    resolve([]); // Return empty array on failure, don't break the flow
+                }
+            });
+        }
+
+        /* Update todos for a recording in Firestore */
+        function updateTodosInDB(recording) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const docRef = doc(db, "recordings", recording.id);
+                    await updateDoc(docRef, {
+                        todos: recording.todos || [],
+                        todosGeneratedAt: recording.todosGeneratedAt || null,
+                        todosStatus: recording.todosStatus || "idle"
+                    });
+                    resolve(recording.id);
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
+        /* Toggle completion status of a specific todo */
+        function toggleTodoCompletionInDB(recordingId, todoIndex, completed) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const docRef = doc(db, "recordings", recordingId);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        const todos = data.todos || [];
+                        if (todos[todoIndex]) {
+                            todos[todoIndex].completed = completed;
+                            await updateDoc(docRef, { todos });
+                        }
+                    }
+                    resolve();
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
+        /* Soft delete a todo (set deletedAt timestamp) */
+        function deleteTodoInDB(recordingId, todoIndex) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const docRef = doc(db, "recordings", recordingId);
+                    const docSnap = await getDoc(docRef);
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        const todos = data.todos || [];
+                        if (todos[todoIndex]) {
+                            todos[todoIndex].deletedAt = new Date().toISOString();
+                            await updateDoc(docRef, { todos });
+                        }
+                    }
+                    resolve();
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
         window.app = {
             uploadAudio,
             processTranscript,
@@ -965,7 +1455,11 @@
             updateCopyCountInDB,
             generateTitle,
             getSummaryFromDB,
-            saveSummaryToDB
+            saveSummaryToDB,
+            generateTodos,
+            updateTodosInDB,
+            toggleTodoCompletionInDB,
+            deleteTodoInDB
         };
 
         window.dispatchEvent(new Event('firebaseReady'));
@@ -1001,6 +1495,25 @@
         const todaySummaryBox = document.getElementById('today-summary-box');
         const yesterdaySummaryBox = document.getElementById('yesterday-summary-box');
         const faviconEl = document.getElementById('favicon');
+
+        // Modal Tab Elements
+        const modalTabs = document.getElementById('modal-tabs');
+        const tabTranscript = document.getElementById('tab-transcript');
+        const tabTodos = document.getElementById('tab-todos');
+        const tabTodosCount = document.getElementById('tab-todos-count');
+        const tabTodosSpinner = document.getElementById('tab-todos-spinner');
+        const panelTranscript = document.getElementById('panel-transcript');
+        const panelTodos = document.getElementById('panel-todos');
+        const todosLoading = document.getElementById('todos-loading');
+        const todosError = document.getElementById('todos-error');
+        const todosEmpty = document.getElementById('todos-empty');
+        const todosGeneratePrompt = document.getElementById('todos-generate-prompt');
+        const generateTodosBtn = document.getElementById('generate-todos-btn');
+        const todosList = document.getElementById('todos-list');
+
+        // Action Items Section Elements
+        const actionItemsSection = document.getElementById('action-items-section');
+        const actionItemsList = document.getElementById('action-items-list');
 
         const baseTitle = 'ClearTranscript';
         const icons = {
@@ -1051,6 +1564,8 @@
         let loadedWithRecordingId = false;
         let summaries = {};
         const copyUpdateTimers = {};
+        let activeModalTab = 'transcript';
+        let currentModalRecording = null;
         const summaryIconSVG = `
             <svg class="summary-icon" viewBox="0 0 1024 1024" width="1em" height="1em" xmlns="http://www.w3.org/2000/svg">
                 <path d="M526.791111 1005.037037h-329.955555c-61.62963 0-111.691852-50.062222-111.691852-111.691852V246.518519c0-61.62963 50.062222-111.691852 111.691852-111.691852h145.066666c21.617778-57.457778 74.145185-132.740741 168.770371-132.740741 101.451852 0 147.152593 85.712593 164.598518 132.740741h132.361482c61.62963 0 111.691852 50.062222 111.691851 111.691852v376.794074c0 20.859259-17.066667 37.925926-37.925925 37.925926s-37.925926-17.066667-37.925926-37.925926V246.518519c0-19.721481-16.118519-35.84-35.84-35.84h-160.237037c-17.825185 0-33.185185-12.515556-36.977778-29.771852-0.948148-3.982222-24.082963-102.968889-99.745185-102.968889-80.213333 0-103.537778 101.831111-103.727408 102.968889a37.736296 37.736296 0 0 1-36.977778 29.771852h-173.131851c-19.721481 0-35.84 16.118519-35.84 35.84v646.637037c0 19.721481 16.118519 35.84 35.84 35.84h329.955555c20.859259 0 37.925926 17.066667 37.925926 37.925925s-17.066667 38.115556-37.925926 38.115556z" fill="black"/>
@@ -1072,6 +1587,213 @@
             }
             scheduleCopyCountUpdate(recording);
         }
+
+        // Modal Tab Functions
+        function switchModalTab(tabName) {
+            activeModalTab = tabName;
+
+            // Update tab button states
+            tabTranscript.classList.toggle('modal-tab--active', tabName === 'transcript');
+            tabTodos.classList.toggle('modal-tab--active', tabName === 'todos');
+
+            // Update panel visibility
+            panelTranscript.classList.toggle('modal-panel--active', tabName === 'transcript');
+            panelTodos.classList.toggle('modal-panel--active', tabName === 'todos');
+        }
+
+        // Helper function to escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Render todos in the modal
+        function renderModalTodos(recording) {
+            currentModalRecording = recording;
+
+            // Get non-deleted todos
+            const todos = (recording.todos || []).filter(todo => !todo.deletedAt);
+            const incompleteTodos = todos.filter(todo => !todo.completed);
+
+            // Update count badge
+            if (incompleteTodos.length > 0) {
+                tabTodosCount.textContent = incompleteTodos.length;
+                tabTodosCount.style.display = 'inline';
+            } else {
+                tabTodosCount.style.display = 'none';
+            }
+
+            // Handle loading state
+            if (recording.todosStatus === 'loading') {
+                tabTodosSpinner.style.display = 'inline-block';
+                todosLoading.style.display = 'flex';
+                todosError.style.display = 'none';
+                todosEmpty.style.display = 'none';
+                todosGeneratePrompt.style.display = 'none';
+                todosList.style.display = 'none';
+                return;
+            }
+
+            tabTodosSpinner.style.display = 'none';
+            todosLoading.style.display = 'none';
+
+            // Handle error state
+            if (recording.todosStatus === 'error') {
+                todosError.style.display = 'block';
+                todosEmpty.style.display = 'none';
+                todosGeneratePrompt.style.display = 'none';
+                todosList.style.display = 'none';
+                return;
+            }
+
+            todosError.style.display = 'none';
+
+            // Handle idle state (no todos generated yet)
+            if (recording.todosStatus === 'idle' || !recording.todosStatus) {
+                if (!recording.todos || recording.todos.length === 0) {
+                    todosEmpty.style.display = 'none';
+                    todosGeneratePrompt.style.display = 'block';
+                    todosList.style.display = 'none';
+                    return;
+                }
+            }
+
+            todosGeneratePrompt.style.display = 'none';
+
+            // Handle empty state
+            if (todos.length === 0) {
+                todosEmpty.style.display = 'block';
+                todosList.style.display = 'none';
+                return;
+            }
+
+            todosEmpty.style.display = 'none';
+            todosList.style.display = 'block';
+
+            // Render todo items
+            todosList.innerHTML = todos.map((todo, index) => `
+                <li class="todo-item ${todo.completed ? 'todo-item--completed' : ''}" data-index="${index}">
+                    <div class="todo-checkbox ${todo.completed ? 'todo-checkbox--checked' : ''}" data-index="${index}">
+                        <svg viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+                        </svg>
+                    </div>
+                    <div class="todo-content">
+                        <div class="todo-text">${escapeHtml(todo.text)}</div>
+                        <div class="todo-citation" data-index="${index}">${escapeHtml(todo.citation)}</div>
+                    </div>
+                    <div class="todo-actions">
+                        <button class="todo-delete-btn" data-index="${index}" title="Delete">
+                            <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+                                <path d="M11 1.75V3h2.25a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1 0-1.5H5V1.75C5 .784 5.784 0 6.75 0h2.5C10.216 0 11 .784 11 1.75ZM4.496 6.675l.66 6.6a.25.25 0 0 0 .249.225h5.19a.25.25 0 0 0 .249-.225l.66-6.6a.75.75 0 0 1 1.492.149l-.66 6.6A1.748 1.748 0 0 1 10.595 15h-5.19a1.75 1.75 0 0 1-1.741-1.575l-.66-6.6a.75.75 0 1 1 1.492-.15ZM6.5 1.75V3h3V1.75a.25.25 0 0 0-.25-.25h-2.5a.25.25 0 0 0-.25.25Z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </li>
+            `).join('');
+
+            // Add event listeners for checkboxes
+            todosList.querySelectorAll('.todo-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('click', handleTodoToggle);
+            });
+
+            // Add event listeners for citations (expand/collapse)
+            todosList.querySelectorAll('.todo-citation').forEach(citation => {
+                citation.addEventListener('click', handleCitationClick);
+            });
+
+            // Add event listeners for delete buttons
+            todosList.querySelectorAll('.todo-delete-btn').forEach(btn => {
+                btn.addEventListener('click', handleTodoDelete);
+            });
+        }
+
+        // Handle checkbox toggle
+        async function handleTodoToggle(e) {
+            const index = parseInt(e.currentTarget.dataset.index);
+            const recording = currentModalRecording;
+
+            if (!recording || !recording.todos[index]) return;
+
+            const todo = recording.todos[index];
+            todo.completed = !todo.completed;
+
+            // Update UI immediately
+            renderModalTodos(recording);
+            renderRecordings(); // Update cards and action items section
+
+            // Persist to database
+            if (recording.id) {
+                await window.app.toggleTodoCompletionInDB(recording.id, index, todo.completed);
+            }
+        }
+
+        // Handle citation expand/collapse
+        function handleCitationClick(e) {
+            e.currentTarget.classList.toggle('todo-citation--expanded');
+        }
+
+        // Handle todo deletion
+        async function handleTodoDelete(e) {
+            e.stopPropagation();
+            const index = parseInt(e.currentTarget.dataset.index);
+            const recording = currentModalRecording;
+
+            if (!recording || !recording.todos[index]) return;
+
+            // Soft delete
+            recording.todos[index].deletedAt = new Date().toISOString();
+
+            // Update UI immediately
+            renderModalTodos(recording);
+            renderRecordings();
+
+            // Persist to database
+            if (recording.id) {
+                await window.app.deleteTodoInDB(recording.id, index);
+            }
+        }
+
+        // Tab click handlers
+        tabTranscript.addEventListener('click', () => switchModalTab('transcript'));
+        tabTodos.addEventListener('click', () => switchModalTab('todos'));
+
+        // Generate todos button handler
+        generateTodosBtn.addEventListener('click', async () => {
+            const recording = currentModalRecording;
+            if (!recording) return;
+
+            generateTodosBtn.disabled = true;
+            generateTodosBtn.textContent = 'Extracting...';
+
+            recording.todosStatus = 'loading';
+            renderModalTodos(recording);
+
+            try {
+                const todos = await window.app.generateTodos(recording.transcript);
+                recording.todos = todos.map(todo => ({
+                    ...todo,
+                    completed: false,
+                    deletedAt: null
+                }));
+                recording.todosStatus = 'ready';
+                recording.todosGeneratedAt = new Date().toISOString();
+
+                if (recording.id) {
+                    await window.app.updateTodosInDB(recording);
+                }
+            } catch (err) {
+                console.error('Failed to generate todos:', err);
+                recording.todosStatus = 'error';
+            }
+
+            renderModalTodos(recording);
+            renderRecordings();
+
+            generateTodosBtn.disabled = false;
+            generateTodosBtn.textContent = 'Extract Action Items';
+        });
 
         // Mock JSON Data
         const mockData = [
@@ -1264,7 +1986,10 @@
                     transcript: 'Processing transcript...',
                     audioURL,
                     date,
-                    copyCount: 0
+                    copyCount: 0,
+                    todos: [],
+                    todosStatus: 'idle',
+                    todosGeneratedAt: null
                 };
 
                 recordings.push(recording);
@@ -1286,6 +2011,30 @@
                 recording.title = aiTitle;
                 modalTitle.textContent = aiTitle;
                 renderRecordings();
+
+                // Start generating todos (don't await - let it run in background)
+                recording.todosStatus = "loading";
+                renderRecordings();
+
+                window.app.generateTodos(transcript).then(todos => {
+                    recording.todos = todos.map(todo => ({
+                        ...todo,
+                        completed: false,
+                        deletedAt: null
+                    }));
+                    recording.todosStatus = "ready";
+                    recording.todosGeneratedAt = new Date().toISOString();
+                    renderRecordings();
+
+                    // Update in DB if recording already has an ID
+                    if (recording.id) {
+                        window.app.updateTodosInDB(recording);
+                    }
+                }).catch(err => {
+                    console.error('Todo generation failed:', err);
+                    recording.todosStatus = "error";
+                    renderRecordings();
+                });
 
                 loadingIndicator.textContent = "Saving recording...";
 
@@ -1315,8 +2064,13 @@
         }
 
         function loadRecordings(data) {
-            // Initialize recordings with mockData
-            recordings = data;
+            // Initialize recordings and normalize todo fields
+            recordings = data.map(rec => ({
+                ...rec,
+                todos: rec.todos || [],
+                todosStatus: rec.todosStatus || (rec.todos && rec.todos.length > 0 ? 'ready' : 'idle'),
+                todosGeneratedAt: rec.todosGeneratedAt || null
+            }));
 
             renderRecordings();
         }
@@ -1328,12 +2082,169 @@
             });
 
             loadAllButton.style.display = 'none';
-            
+
             // Set recordings array to only contain this recording
             recordings = [recording];
-            
+
             // Show only the modal with this recording
             openModal(0);
+        }
+
+        // Function to get all incomplete, non-deleted todos across all recordings
+        function getAllIncompleteTodos() {
+            const allTodos = [];
+
+            recordings.forEach((recording, recordingIndex) => {
+                if (!recording.todos) return;
+
+                recording.todos.forEach((todo, todoIndex) => {
+                    // Skip completed or deleted todos
+                    if (todo.completed || todo.deletedAt) return;
+
+                    allTodos.push({
+                        ...todo,
+                        recordingIndex,
+                        todoIndex,
+                        recordingId: recording.id,
+                        recordingTitle: recording.title,
+                        recordingDate: recording.date
+                    });
+                });
+            });
+
+            // Sort by recording date (most recent first)
+            allTodos.sort((a, b) => {
+                const dateA = a.recordingDate && a.recordingDate.seconds
+                    ? new Date(a.recordingDate.seconds * 1000)
+                    : new Date(a.recordingDate);
+                const dateB = b.recordingDate && b.recordingDate.seconds
+                    ? new Date(b.recordingDate.seconds * 1000)
+                    : new Date(b.recordingDate);
+                return dateB - dateA;
+            });
+
+            return allTodos;
+        }
+
+        // Render the top-level action items section
+        function renderActionItemsSection() {
+            const incompleteTodos = getAllIncompleteTodos();
+
+            // Show/hide section based on whether there are items
+            if (incompleteTodos.length === 0) {
+                actionItemsSection.classList.add('section--hidden');
+                return;
+            }
+
+            actionItemsSection.classList.remove('section--hidden');
+
+            // Render action items
+            actionItemsList.innerHTML = incompleteTodos.map((todo, idx) => {
+                const date = todo.recordingDate && todo.recordingDate.seconds
+                    ? new Date(todo.recordingDate.seconds * 1000)
+                    : new Date(todo.recordingDate);
+
+                return `
+                    <div class="action-item-card"
+                         data-recording-index="${todo.recordingIndex}"
+                         data-todo-index="${todo.todoIndex}">
+                        <div class="action-item-checkbox"
+                             data-recording-index="${todo.recordingIndex}"
+                             data-todo-index="${todo.todoIndex}">
+                            <svg viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+                            </svg>
+                        </div>
+                        <div class="action-item-content">
+                            <div class="action-item-text">${escapeHtml(todo.text)}</div>
+                            <div class="action-item-source">
+                                <span class="action-item-source-title">${escapeHtml(todo.recordingTitle)}</span>
+                                <span class="action-item-source-date">· ${formatTime(date)}</span>
+                            </div>
+                        </div>
+                        <button class="action-item-delete"
+                                data-recording-index="${todo.recordingIndex}"
+                                data-todo-index="${todo.todoIndex}"
+                                title="Delete">
+                            <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+                                <path d="M11 1.75V3h2.25a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1 0-1.5H5V1.75C5 .784 5.784 0 6.75 0h2.5C10.216 0 11 .784 11 1.75ZM4.496 6.675l.66 6.6a.25.25 0 0 0 .249.225h5.19a.25.25 0 0 0 .249-.225l.66-6.6a.75.75 0 0 1 1.492.149l-.66 6.6A1.748 1.748 0 0 1 10.595 15h-5.19a1.75 1.75 0 0 1-1.741-1.575l-.66-6.6a.75.75 0 1 1 1.492-.15ZM6.5 1.75V3h3V1.75a.25.25 0 0 0-.25-.25h-2.5a.25.25 0 0 0-.25.25Z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            // Add event listeners
+
+            // Checkbox click - toggle completion
+            actionItemsList.querySelectorAll('.action-item-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const recordingIndex = parseInt(e.currentTarget.dataset.recordingIndex);
+                    const todoIndex = parseInt(e.currentTarget.dataset.todoIndex);
+                    const recording = recordings[recordingIndex];
+
+                    if (!recording || !recording.todos[todoIndex]) return;
+
+                    recording.todos[todoIndex].completed = true;
+
+                    // Update UI
+                    renderActionItemsSection();
+                    renderRecordings();
+
+                    // Update modal if it's open and showing the same recording
+                    if (currentModalRecording === recording) {
+                        renderModalTodos(recording);
+                    }
+
+                    // Persist
+                    if (recording.id) {
+                        await window.app.toggleTodoCompletionInDB(recording.id, todoIndex, true);
+                    }
+                });
+            });
+
+            // Card click - open modal
+            actionItemsList.querySelectorAll('.action-item-card').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    // Don't open modal if clicking checkbox or delete
+                    if (e.target.closest('.action-item-checkbox') || e.target.closest('.action-item-delete')) {
+                        return;
+                    }
+                    const recordingIndex = parseInt(card.dataset.recordingIndex);
+                    openModal(recordingIndex);
+                    // Switch to todos tab
+                    switchModalTab('todos');
+                });
+            });
+
+            // Delete button click
+            actionItemsList.querySelectorAll('.action-item-delete').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const recordingIndex = parseInt(e.currentTarget.dataset.recordingIndex);
+                    const todoIndex = parseInt(e.currentTarget.dataset.todoIndex);
+                    const recording = recordings[recordingIndex];
+
+                    if (!recording || !recording.todos[todoIndex]) return;
+
+                    recording.todos[todoIndex].deletedAt = new Date().toISOString();
+
+                    // Update UI
+                    renderActionItemsSection();
+                    renderRecordings();
+
+                    // Update modal if it's open and showing the same recording
+                    if (currentModalRecording === recording) {
+                        renderModalTodos(recording);
+                    }
+
+                    // Persist
+                    if (recording.id) {
+                        await window.app.deleteTodoInDB(recording.id, todoIndex);
+                    }
+                });
+            });
         }
 
         function renderRecordings() {
@@ -1491,6 +2402,9 @@
 
             loadingCards.closest('.section').classList.add('section--hidden');
 
+            // Render the top-level action items section
+            renderActionItemsSection();
+
         }
 
         // Helper function to format time
@@ -1532,15 +2446,24 @@
 
         function openModal(index, { updateURL = true } = {}) {
             const rec = recordings[index];
+            if (!rec) return;
+
             modalTitle.textContent = rec.title;
             recordingDate.textContent = formatDate(rec.date);
             modalTranscript.textContent = rec.transcript;
             modalAudio.src = rec.audioURL;
             modalAudio.playbackRate = 1.75;
             modal.dataset.index = index;
+            modal.dataset.recordingId = rec.id || '';
             copyCountEl.textContent = rec.copyCount || 0;
             modal.style.display = 'flex';
-            
+
+            // Reset to transcript tab
+            switchModalTab('transcript');
+
+            // Render todos
+            renderModalTodos(rec);
+
             // Only update URL if requested and we have a recording ID
             if (updateURL && rec.id) {
                 const url = new URL(window.location);
