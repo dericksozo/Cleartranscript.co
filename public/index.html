@@ -428,7 +428,6 @@
         }
 
         .modal .transcript {
-            margin-top: 20px;
             margin-bottom: 20px;
             white-space: pre-wrap;
             line-height: 1.5;
@@ -618,6 +617,7 @@
         /* Modal Panels */
         .modal-panel {
             display: none;
+            margin-top: 20px;
         }
 
         .modal-panel--active {
@@ -642,6 +642,11 @@
             background-color: var(--bg-secondary);
             border-radius: 8px;
             border: 1px solid var(--border-color);
+            margin-bottom: 16px;
+        }
+
+        .todo-item:last-child {
+            margin-bottom: 0;
         }
 
         .todo-item--completed {
