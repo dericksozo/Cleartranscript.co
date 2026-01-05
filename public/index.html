@@ -290,11 +290,21 @@
             border-top: 1px solid #e1e4e8;
             font-size: 0.85em;
             color: #666;
+        }
+
+        .card-metadata-time {
+            opacity: 1;
+        }
+
+        .card-metadata-hover {
+            display: flex;
+            align-items: center;
+            gap: 12px;
             opacity: 0;
             transition: opacity 0.2s;
         }
 
-        .card:hover .card-metadata {
+        .card:hover .card-metadata-hover {
             opacity: 1;
         }
 
@@ -309,7 +319,7 @@
         }
 
         .card-metadata-badge {
-            background: #0969da;
+            background: #666;
             color: white;
             padding: 2px 6px;
             border-radius: 10px;
@@ -837,6 +847,36 @@
             color: #e53935;
         }
 
+        .summary-generate-prompt {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .summary-generate-prompt p {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .generate-summary-btn {
+            background-color: var(--text-primary);
+            color: var(--bg-primary);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: opacity 0.2s;
+        }
+
+        .generate-summary-btn:hover {
+            opacity: 0.9;
+        }
+
+        .generate-summary-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         /* Top-Level Action Items Section */
         .action-items-list {
             display: flex;
@@ -1097,6 +1137,10 @@
                     </div>
                     <div class="summary-error-state" id="summary-error" style="display: none;">
                         Failed to generate summary. Please try again later.
+                    </div>
+                    <div class="summary-generate-prompt" id="summary-generate-prompt" style="display: none;">
+                        <p>Summary hasn't been generated for this recording yet.</p>
+                        <button class="generate-summary-btn" id="generate-summary-btn">Generate Summary</button>
                     </div>
                     <div class="summary-content" id="summary-content">
                         <p id="modal-summary"></p>
@@ -1589,6 +1633,8 @@
         const panelTodos = document.getElementById('panel-todos');
         const summaryLoading = document.getElementById('summary-loading');
         const summaryError = document.getElementById('summary-error');
+        const summaryGeneratePrompt = document.getElementById('summary-generate-prompt');
+        const generateSummaryBtn = document.getElementById('generate-summary-btn');
         const summaryContent = document.getElementById('summary-content');
         const modalSummary = document.getElementById('modal-summary');
         const todosLoading = document.getElementById('todos-loading');
@@ -1699,27 +1745,29 @@
                 summaryContent.style.display = 'block';
                 summaryLoading.style.display = 'none';
                 summaryError.style.display = 'none';
+                summaryGeneratePrompt.style.display = 'none';
+                tabSummarySpinner.style.display = 'none';
             } else if (recording.summaryStatus === 'loading') {
                 // Show loading state
                 summaryContent.style.display = 'none';
                 summaryLoading.style.display = 'flex';
                 summaryError.style.display = 'none';
+                summaryGeneratePrompt.style.display = 'none';
                 tabSummarySpinner.style.display = 'inline-block';
             } else if (recording.summaryStatus === 'error') {
                 // Show error state
                 summaryContent.style.display = 'none';
                 summaryLoading.style.display = 'none';
                 summaryError.style.display = 'block';
+                summaryGeneratePrompt.style.display = 'none';
                 tabSummarySpinner.style.display = 'none';
             } else {
-                // No summary yet - show transcript snippet as fallback
-                const snippet = recording.transcript.length > 300
-                    ? recording.transcript.substring(0, 300) + '...'
-                    : recording.transcript;
-                modalSummary.textContent = snippet;
-                summaryContent.style.display = 'block';
+                // No summary yet - show generate prompt
+                summaryContent.style.display = 'none';
                 summaryLoading.style.display = 'none';
                 summaryError.style.display = 'none';
+                summaryGeneratePrompt.style.display = 'block';
+                tabSummarySpinner.style.display = 'none';
             }
         }
 
@@ -1912,6 +1960,38 @@
 
             generateTodosBtn.disabled = false;
             generateTodosBtn.textContent = 'Extract Action Items';
+        });
+
+        // Generate summary button handler
+        generateSummaryBtn.addEventListener('click', async () => {
+            const recording = currentModalRecording;
+            if (!recording) return;
+
+            generateSummaryBtn.disabled = true;
+            generateSummaryBtn.textContent = 'Generating...';
+
+            recording.summaryStatus = 'loading';
+            renderModalSummary(recording);
+
+            try {
+                const summary = await window.app.generateSummary(recording.transcript, recording.title);
+                recording.summary = summary;
+                recording.summaryStatus = 'ready';
+                recording.summaryGeneratedAt = new Date().toISOString();
+
+                if (recording.id) {
+                    await window.app.updateSummaryInDB(recording);
+                }
+            } catch (err) {
+                console.error('Failed to generate summary:', err);
+                recording.summaryStatus = 'error';
+            }
+
+            renderModalSummary(recording);
+            renderRecordings();
+
+            generateSummaryBtn.disabled = false;
+            generateSummaryBtn.textContent = 'Generate Summary';
         });
 
         // Mock JSON Data
@@ -2461,6 +2541,8 @@
                     ? rec.todos.filter(t => !t.deletedAt && !t.completed).length
                     : 0;
 
+                const hasSummary = rec.summary && rec.summary.trim();
+
                 card.innerHTML = `
                     <div class="flex-container flex-container--spaceBetween">
                         <h3>${rec.title}</h3>
@@ -2476,27 +2558,31 @@
                     </div>
                     <p>${displayText}</p>
                     <div class="card-metadata">
-                        <div class="card-metadata-item">
-                            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-                                <path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Z"></path>
-                            </svg>
-                            <span>Summary</span>
-                        </div>
-                        <div class="card-metadata-item">
+                        <div class="card-metadata-item card-metadata-time">
                             <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
                                 <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM7.25 8.25V4.5a.75.75 0 0 1 1.5 0v3.5h2.25a.75.75 0 0 1 0 1.5h-3a.75.75 0 0 1-.75-.75Z"></path>
                             </svg>
                             <span>${formatTime(recDate)}</span>
                         </div>
-                        ${actionItemsCount > 0 ? `
-                            <div class="card-metadata-item">
-                                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
-                                    <path d="M2.5 3.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5v-9Zm1 .5v8h9v-8H3.5Z"></path>
-                                    <path d="M11 6a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1 0-1.5h4.5A.75.75 0 0 1 11 6Zm0 3a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1 0-1.5h4.5A.75.75 0 0 1 11 9Z"></path>
-                                </svg>
-                                <span class="card-metadata-badge">${actionItemsCount}</span>
-                            </div>
-                        ` : ''}
+                        <div class="card-metadata-hover">
+                            ${hasSummary ? `
+                                <div class="card-metadata-item">
+                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                                        <path d="M0 1.75C0 .784.784 0 1.75 0h12.5C15.216 0 16 .784 16 1.75v9.5A1.75 1.75 0 0 1 14.25 13H8.06l-2.573 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25Zm1.75-.25a.25.25 0 0 0-.25.25v9.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-9.5a.25.25 0 0 0-.25-.25Z"></path>
+                                    </svg>
+                                    <span>Summary</span>
+                                </div>
+                            ` : ''}
+                            ${actionItemsCount > 0 ? `
+                                <div class="card-metadata-item">
+                                    <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                                        <path d="M2.5 3.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5v-9Zm1 .5v8h9v-8H3.5Z"></path>
+                                        <path d="M11 6a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1 0-1.5h4.5A.75.75 0 0 1 11 6Zm0 3a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1 0-1.5h4.5A.75.75 0 0 1 11 9Z"></path>
+                                    </svg>
+                                    <span class="card-metadata-badge">${actionItemsCount}</span>
+                                </div>
+                            ` : ''}
+                        </div>
                     </div>
                 `;
 
