@@ -576,6 +576,43 @@ Deno.serve(async (req) => {
     }
   }
 
+  // *** NEW /summary-single ENDPOINT FOR PER-NOTE SUMMARIES ***
+  if (req.method === "POST" && path === "/summary-single") {
+    try {
+      const contentType = req.headers.get("Content-Type") || "";
+      if (!contentType.includes("application/json")) {
+        return createCorsResponse("Unsupported Media Type: Expected application/json", { status: 415 });
+      }
+
+      const body = await req.json();
+
+      // Validate that we have both transcript and title
+      if (!body || typeof body !== 'object') {
+        return createCorsResponse("Request body must be a JSON object.", { status: 400 });
+      }
+      if (!body.transcript || typeof body.transcript !== 'string') {
+        return createCorsResponse("'transcript' field is required and must be a string.", { status: 400 });
+      }
+      if (!body.title || typeof body.title !== 'string') {
+        return createCorsResponse("'title' field is required and must be a string.", { status: 400 });
+      }
+
+      const transcript = body.transcript.trim();
+      const title = body.title.trim();
+
+      const summary = await generateNoteSummary(transcript, title);
+
+      // Return the summary as JSON
+      return createCorsResponse(JSON.stringify({ summary }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    } catch (error) {
+      console.error("Error processing /summary-single request:", error);
+      return createCorsResponse("Internal Server Error", { status: 500 });
+    }
+  }
+
   // Handle other routes
   return createCorsResponse("Not Found", { status: 404 });
 });
