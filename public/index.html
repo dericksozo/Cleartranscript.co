@@ -810,6 +810,107 @@
             cursor: not-allowed;
         }
 
+        /* Pin Button Styles */
+        .pin-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            color: var(--text-secondary);
+        }
+
+        .pin-button:hover {
+            color: #f59e0b;
+        }
+
+        .pin-button svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .pin-button--active {
+            color: #f59e0b;
+        }
+
+        .pin-button--active svg {
+            fill: #f59e0b;
+        }
+
+        /* Pinned Section Styles */
+        .pinned-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+
+        .pinned-card {
+            position: relative;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+            box-shadow: 0 1px 3px var(--shadow-color);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .pinned-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+
+        .pinned-card h3 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .pinned-card p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .pinned-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .pinned-card-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .pinned-card-unpin {
+            opacity: 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            color: #f59e0b;
+            transition: all 0.2s;
+        }
+
+        .pinned-card:hover .pinned-card-unpin {
+            opacity: 1;
+        }
+
+        .pinned-card-unpin:hover {
+            background-color: rgba(245, 158, 11, 0.1);
+        }
+
         /* Top-Level Action Items Section */
         .action-items-list {
             display: flex;
@@ -967,6 +1068,14 @@
             </div>
         </div>
 
+        <!-- Pinned Section -->
+        <div class="section section--hidden" id="pinned-section">
+            <h2>Pinned</h2>
+            <div class="pinned-cards" id="pinned-cards">
+                <!-- Pinned cards will be inserted here -->
+            </div>
+        </div>
+
         <div class="section section--hidden" id="today-section">
             <div class="section-header">
                 <h2>Today</h2>
@@ -1036,6 +1145,17 @@
                             <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" role="img" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
                                 <title>OpenAI icon</title>
                                 <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z"/>
+                            </svg>
+                        </button>
+                        <!-- Pin Button -->
+                        <button class="pin-button" id="pin-button" data-tooltip="Pin Note" aria-label="Pin Note">
+                            <!-- Outline star (unpinned) -->
+                            <svg class="pin-icon-outline" aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                            <!-- Filled star (pinned) -->
+                            <svg class="pin-icon-filled" aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="display: none;">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                             </svg>
                         </button>
                         <!-- Existing Copy Button with counter -->
@@ -1449,6 +1569,21 @@
             });
         }
 
+        /* Update pinned status for a recording */
+        function updatePinnedInDB(recordingId, pinned) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const docRef = doc(db, "recordings", recordingId);
+                    await updateDoc(docRef, { pinned: pinned });
+                    console.log("Pinned status updated for recording:", recordingId, "pinned:", pinned);
+                    resolve(recordingId);
+                } catch (error) {
+                    console.error("Error updating pinned status:", error);
+                    reject(error);
+                }
+            });
+        }
+
         window.app = {
             uploadAudio,
             processTranscript,
@@ -1463,7 +1598,8 @@
             generateTodos,
             updateTodosInDB,
             toggleTodoCompletionInDB,
-            deleteTodoInDB
+            deleteTodoInDB,
+            updatePinnedInDB
         };
 
         window.dispatchEvent(new Event('firebaseReady'));
@@ -1492,6 +1628,7 @@
         const copyButton = document.getElementById('copy-button');
         const copyCountEl = document.getElementById('copy-count');
         const chatGPTButton = document.getElementById('chatgpt-button');
+        const pinButton = document.getElementById('pin-button');
         const loadingIndicator = document.getElementById('loading-indicator');
         const loadAllButton = document.getElementById('load-all-button');
         const todaySummaryButton = document.getElementById('today-summary-button');
@@ -1518,6 +1655,10 @@
         // Action Items Section Elements
         const actionItemsSection = document.getElementById('action-items-section');
         const actionItemsList = document.getElementById('action-items-list');
+
+        // Pinned Section Elements
+        const pinnedSection = document.getElementById('pinned-section');
+        const pinnedCards = document.getElementById('pinned-cards');
 
         const baseTitle = 'ClearTranscript';
         const icons = {
@@ -2251,6 +2392,84 @@
             });
         }
 
+        // Render the pinned section
+        function renderPinnedSection(pinnedRecordings) {
+            // Show/hide section based on whether there are pinned items
+            if (!pinnedRecordings || pinnedRecordings.length === 0) {
+                pinnedSection.classList.add('section--hidden');
+                return;
+            }
+
+            pinnedSection.classList.remove('section--hidden');
+
+            // Render pinned cards
+            pinnedCards.innerHTML = pinnedRecordings.map(({ rec, index }) => {
+                const date = rec.date && rec.date.seconds
+                    ? new Date(rec.date.seconds * 1000)
+                    : new Date(rec.date);
+
+                return `
+                    <div class="pinned-card" data-index="${index}">
+                        <div class="flex-container flex-container--spaceBetween">
+                            <h3>${escapeHtml(rec.title)}</h3>
+                            <button class="pinned-card-unpin" data-index="${index}" title="Unpin">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                                </svg>
+                            </button>
+                        </div>
+                        <p>${rec.transcript.length > 150 ? rec.transcript.substring(0, 150) + '...' : rec.transcript}</p>
+                        <div class="pinned-card-footer">
+                            <span class="pinned-card-time">${formatDate(rec.date)}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Add event listeners
+
+            // Card click - open modal
+            pinnedCards.querySelectorAll('.pinned-card').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    // Don't open modal if clicking unpin button
+                    if (e.target.closest('.pinned-card-unpin')) {
+                        return;
+                    }
+                    const recordingIndex = parseInt(card.dataset.index);
+                    openModal(recordingIndex);
+                });
+            });
+
+            // Unpin button click
+            pinnedCards.querySelectorAll('.pinned-card-unpin').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const recordingIndex = parseInt(e.currentTarget.dataset.index);
+                    const recording = recordings[recordingIndex];
+
+                    if (!recording) return;
+
+                    // Toggle pinned state
+                    recording.pinned = false;
+
+                    // Update UI
+                    renderRecordings();
+
+                    // Persist
+                    if (recording.id) {
+                        try {
+                            await window.app.updatePinnedInDB(recording.id, false);
+                        } catch (error) {
+                            console.error('Error updating pinned status:', error);
+                            // Revert on error
+                            recording.pinned = true;
+                            renderRecordings();
+                        }
+                    }
+                });
+            });
+        }
+
         function renderRecordings() {
             const now = new Date();
             const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -2266,17 +2485,21 @@
 
             // Group recordings by section
             const sections = {
+                pinned: [],
                 today: [],
                 yesterday: [],
                 all: []
             };
 
             recordings.forEach((rec, index) => {
-                const recDate = rec.date && rec.date.seconds 
-                    ? new Date(rec.date.seconds * 1000) 
+                const recDate = rec.date && rec.date.seconds
+                    ? new Date(rec.date.seconds * 1000)
                     : new Date(rec.date);
 
-                if (recDate >= today) {
+                // If pinned, add to pinned section instead of time-based sections
+                if (rec.pinned) {
+                    sections.pinned.push({ rec, index });
+                } else if (recDate >= today) {
                     sections.today.push({ rec, index });
                 } else if (recDate >= yesterday && recDate < today) {
                     sections.yesterday.push({ rec, index });
@@ -2346,6 +2569,9 @@
             }
 
             // Update each section
+
+            // Render pinned section
+            renderPinnedSection(sections.pinned);
 
             if (sections.today.length > 0) {
                 updateSection(todayCards, sections.today);
@@ -2462,6 +2688,9 @@
             copyCountEl.textContent = rec.copyCount || 0;
             modal.style.display = 'flex';
 
+            // Update pin button state
+            updatePinButtonState(rec.pinned);
+
             // Reset to transcript tab
             switchModalTab('transcript');
 
@@ -2473,6 +2702,26 @@
                 const url = new URL(window.location);
                 url.searchParams.set('id', rec.id);
                 window.history.pushState({}, '', url);
+            }
+        }
+
+        // Update pin button visual state
+        function updatePinButtonState(isPinned) {
+            const outlineIcon = pinButton.querySelector('.pin-icon-outline');
+            const filledIcon = pinButton.querySelector('.pin-icon-filled');
+
+            if (isPinned) {
+                pinButton.classList.add('pin-button--active');
+                pinButton.setAttribute('data-tooltip', 'Unpin Note');
+                pinButton.setAttribute('aria-label', 'Unpin Note');
+                outlineIcon.style.display = 'none';
+                filledIcon.style.display = 'block';
+            } else {
+                pinButton.classList.remove('pin-button--active');
+                pinButton.setAttribute('data-tooltip', 'Pin Note');
+                pinButton.setAttribute('aria-label', 'Pin Note');
+                outlineIcon.style.display = 'block';
+                filledIcon.style.display = 'none';
             }
         }
 
@@ -2709,6 +2958,38 @@
             } else {
                 // Optionally, alert the user or disable the button if empty
                 console.warn('Transcript text is empty, cannot open in ChatGPT.');
+            }
+        });
+
+        // Modal Pin button
+        pinButton.addEventListener('click', async () => {
+            const index = parseInt(modal.dataset.index);
+            const recordingId = modal.dataset.recordingId;
+            const rec = recordings[index];
+
+            if (!rec) return;
+
+            // Toggle pinned state
+            const newPinnedState = !rec.pinned;
+            rec.pinned = newPinnedState;
+
+            // Update button state immediately
+            updatePinButtonState(newPinnedState);
+
+            // Re-render the recordings to move the card
+            renderRecordings();
+
+            // Persist to database
+            if (recordingId) {
+                try {
+                    await window.app.updatePinnedInDB(recordingId, newPinnedState);
+                } catch (error) {
+                    console.error('Error updating pinned status:', error);
+                    // Revert on error
+                    rec.pinned = !newPinnedState;
+                    updatePinButtonState(!newPinnedState);
+                    renderRecordings();
+                }
             }
         });
 
