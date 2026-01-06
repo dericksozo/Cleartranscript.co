@@ -128,6 +128,11 @@
             background-color: rgba(0, 0, 0, 0.1);
         }
 
+        .upload-area.recording .create-audio-label {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
         .upload-area input {
             display: none;
         }
@@ -225,98 +230,81 @@
             font-size: 1rem;
         }
 
-        .section-header {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            margin-bottom: 8px;
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
         }
 
-        .summary-button {
+        .card {
+            position: relative;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+            box-shadow: 0 1px 3px var(--shadow-color);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+
+        .card h3 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            line-height: 1.3;
+            color: var(--text-primary);
+        }
+
+        .card p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 5;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .card .copy-card-button {
+            opacity: 0;
             background: none;
             border: none;
             cursor: pointer;
             padding: 4px;
             border-radius: 4px;
-        }
-
-        .summary-icon {
-            width: 1em;
-            height: 1em;
-            vertical-align: middle;
-            fill: currentColor;
-            overflow: hidden;
-        }
-
-        .summary-button:hover {
-            background-color: var(--hover-bg);
-        }
-
-        .summary-spinner {
-            width: 16px;
-            height: 16px;
-            border: 2px solid currentColor;
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        .summary-box {
-            display: none;
-            background-color: #e6f4ff;
-            border: 1px solid #b3d4ff;
-            border-radius: 4px;
-            padding: 10px;
-            margin-bottom: 12px;
-            color: var(--text-primary);
-        }
-
-        .cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .card {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            cursor: pointer;
-            transition: transform 0.2s;
-            position: relative;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
-        .card h3 {
-            margin-bottom: 10px;
-            font-size: 1.1em;
-            font-weight: 500;
-            color: #000;
-            
-            white-space: nowrap;       /* Prevents the text from wrapping to a new line */
-            overflow: hidden;          /* Hides the overflow content */
-            text-overflow: ellipsis;   /* Adds the ellipsis (...) at the end */
-        }
-
-        .card p {
-            font-size: 0.95em;
-            color: #000;
-            line-height: 1.4;
-        }
-
-        .card .copy-card-button {
-            display: block;
-            opacity: 0;
-            cursor: pointer;
+            color: var(--text-secondary);
+            transition: all 0.2s;
         }
 
         .card:hover .copy-card-button {
-            display: block;
             opacity: 1;
+        }
+
+        .card .copy-card-button:hover {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .card .copy-card-button.copied svg:first-child {
+            display: none;
+        }
+
+        .card .copy-card-button.copied svg:last-child {
+            display: block;
+        }
+
+        .card .copy-card-button svg:last-child {
+            display: none;
         }
 
         /* Card Loading Placeholder */
@@ -810,6 +798,122 @@
             cursor: not-allowed;
         }
 
+        /* Pin Button Styles */
+        .pin-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+            color: var(--text-secondary);
+            height: 32px;
+            width: 32px;
+        }
+
+        .pin-button:hover {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+        }
+
+        .pin-button svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .pin-button--active {
+            color: #f59e0b;
+        }
+
+        .pin-button--active:hover {
+            background-color: rgba(245, 158, 11, 0.1);
+        }
+
+        .pin-button--active svg {
+            fill: #f59e0b;
+        }
+
+        /* Pinned Section Styles */
+        .pinned-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .pinned-card {
+            position: relative;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+            box-shadow: 0 1px 3px var(--shadow-color);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .pinned-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+
+        .pinned-card h3 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .pinned-card p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 5;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .pinned-card-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            display: block;
+        }
+
+        .pinned-card-copy {
+            opacity: 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .pinned-card:hover .pinned-card-copy {
+            opacity: 1;
+        }
+
+        .pinned-card-copy:hover {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .pinned-card-copy.copied svg:first-child {
+            display: none;
+        }
+
+        .pinned-card-copy.copied svg:last-child {
+            display: block;
+        }
+
+        .pinned-card-copy svg:last-child {
+            display: none;
+        }
+
         /* Top-Level Action Items Section */
         .action-items-list {
             display: flex;
@@ -967,32 +1071,22 @@
             </div>
         </div>
 
-        <div class="section section--hidden" id="today-section">
-            <div class="section-header">
-                <h2>Today</h2>
-                <button class="summary-button tooltip" data-tooltip="Generate Summary" id="today-summary-button" aria-label="Generate summary">
-                    <svg class="summary-icon" viewBox="0 0 1024 1024" width="1em" height="1em" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M526.791111 1005.037037h-329.955555c-61.62963 0-111.691852-50.062222-111.691852-111.691852V246.518519c0-61.62963 50.062222-111.691852 111.691852-111.691852h145.066666c21.617778-57.457778 74.145185-132.740741 168.770371-132.740741 101.451852 0 147.152593 85.712593 164.598518 132.740741h132.361482c61.62963 0 111.691852 50.062222 111.691851 111.691852v376.794074c0 20.859259-17.066667 37.925926-37.925925 37.925926s-37.925926-17.066667-37.925926-37.925926V246.518519c0-19.721481-16.118519-35.84-35.84-35.84h-160.237037c-17.825185 0-33.185185-12.515556-36.977778-29.771852-0.948148-3.982222-24.082963-102.968889-99.745185-102.968889-80.213333 0-103.537778 101.831111-103.727408 102.968889a37.736296 37.736296 0 0 1-36.977778 29.771852h-173.131851c-19.721481 0-35.84 16.118519-35.84 35.84v646.637037c0 19.721481 16.118519 35.84 35.84 35.84h329.955555c20.859259 0 37.925926 17.066667 37.925926 37.925925s-17.066667 38.115556-37.925926 38.115556z" fill="black"/>
-                        <path d="M545.754074 211.057778h-76.420741c-10.24 0-18.773333-8.343704-18.773333-18.773334v-0.568888c0-10.24 8.343704-18.773333 18.773333-18.773334h76.420741c10.24 0 18.773333 8.343704 18.773333 18.773334v0.568888c0 10.24-8.533333 18.773333-18.773333 18.773334zM754.346667 387.602963H260.740741c-10.24 0-18.773333-8.343704-18.773334-18.773333v-0.568889c0-10.24 8.343704-18.773333 18.773334-18.773334h493.605926c10.24 0 18.773333 8.343704 18.773333 18.773334v0.568889c0 10.42963-8.533333 18.773333-18.773333 18.773333zM754.346667 564.337778H260.740741c-10.24 0-18.773333-8.343704-18.773334-18.773334v-0.568888c0-10.24 8.343704-18.773333 18.773334-18.773334h493.605926c10.24 0 18.773333 8.343704 18.773333 18.773334v0.568888c0 10.42963-8.533333 18.773333-18.773333 18.773334zM521.481481 741.072593H255.620741c-10.24 0-18.773333-8.343704-18.773334-18.773334v-0.568889c0-10.24 8.343704-18.773333 18.773334-18.773333H521.481481c10.24 0 18.773333 8.343704 18.773334 18.773333v0.568889c0 10.24-8.343704 18.773333-18.773334 18.773334zM769.137778 987.780741c-3.982222 0-8.154074-1.327407-11.567408-3.982222l-104.485926-80.213334a18.811259 18.811259 0 0 1-3.413333-26.548148c6.447407-8.343704 18.204444-9.860741 26.548148-3.413333l89.884445 69.214815 156.065185-189.44a18.962963 18.962963 0 0 1 26.737778-2.654815 18.962963 18.962963 0 0 1 2.654814 26.737777l-167.632592 203.662223c-3.982222 4.171852-9.291852 6.637037-14.791111 6.637037z" fill="black"/>
-                    </svg>
-                </button>
+        <!-- Pinned Section -->
+        <div class="section section--hidden" id="pinned-section">
+            <h2>Pinned</h2>
+            <div class="pinned-cards" id="pinned-cards">
+                <!-- Pinned cards will be inserted here -->
             </div>
-            <div class="summary-box" id="today-summary-box"></div>
+        </div>
+
+        <div class="section section--hidden" id="today-section">
+            <h2>Today</h2>
             <div class="cards" id="today-cards">
                 <!-- Recording cards will be inserted here -->
             </div>
         </div>
         <div class="section section--hidden" id="yesterday-section">
-            <div class="section-header">
-                <h2>Yesterday</h2>
-                <button class="summary-button tooltip" data-tooltip="Generate Summary" id="yesterday-summary-button" aria-label="Generate summary">
-                    <svg class="summary-icon" viewBox="0 0 1024 1024" width="1em" height="1em" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M526.791111 1005.037037h-329.955555c-61.62963 0-111.691852-50.062222-111.691852-111.691852V246.518519c0-61.62963 50.062222-111.691852 111.691852-111.691852h145.066666c21.617778-57.457778 74.145185-132.740741 168.770371-132.740741 101.451852 0 147.152593 85.712593 164.598518 132.740741h132.361482c61.62963 0 111.691852 50.062222 111.691851 111.691852v376.794074c0 20.859259-17.066667 37.925926-37.925925 37.925926s-37.925926-17.066667-37.925926-37.925926V246.518519c0-19.721481-16.118519-35.84-35.84-35.84h-160.237037c-17.825185 0-33.185185-12.515556-36.977778-29.771852-0.948148-3.982222-24.082963-102.968889-99.745185-102.968889-80.213333 0-103.537778 101.831111-103.727408 102.968889a37.736296 37.736296 0 0 1-36.977778 29.771852h-173.131851c-19.721481 0-35.84 16.118519-35.84 35.84v646.637037c0 19.721481 16.118519 35.84 35.84 35.84h329.955555c20.859259 0 37.925926 17.066667 37.925926 37.925925s-17.066667 38.115556-37.925926 38.115556z" fill="black"/>
-                        <path d="M545.754074 211.057778h-76.420741c-10.24 0-18.773333-8.343704-18.773333-18.773334v-0.568888c0-10.24 8.343704-18.773333 18.773333-18.773334h76.420741c10.24 0 18.773333 8.343704 18.773333 18.773334v0.568888c0 10.24-8.533333 18.773333-18.773333 18.773334zM754.346667 387.602963H260.740741c-10.24 0-18.773333-8.343704-18.773334-18.773333v-0.568889c0-10.24 8.343704-18.773333 18.773334-18.773334h493.605926c10.24 0 18.773333 8.343704 18.773333 18.773334v0.568889c0 10.42963-8.533333 18.773333-18.773333 18.773333zM754.346667 564.337778H260.740741c-10.24 0-18.773333-8.343704-18.773334-18.773334v-0.568888c0-10.24 8.343704-18.773333 18.773334-18.773334h493.605926c10.24 0 18.773333 8.343704 18.773333 18.773334v0.568888c0 10.42963-8.533333 18.773333-18.773333 18.773334zM521.481481 741.072593H255.620741c-10.24 0-18.773333-8.343704-18.773334-18.773334v-0.568889c0-10.24 8.343704-18.773333 18.773334-18.773333H521.481481c10.24 0 18.773333 8.343704 18.773334 18.773333v0.568889c0 10.24-8.343704 18.773333-18.773334 18.773334zM769.137778 987.780741c-3.982222 0-8.154074-1.327407-11.567408-3.982222l-104.485926-80.213334a18.811259 18.811259 0 0 1-3.413333-26.548148c6.447407-8.343704 18.204444-9.860741 26.548148-3.413333l89.884445 69.214815 156.065185-189.44a18.962963 18.962963 0 0 1 26.737778-2.654815 18.962963 18.962963 0 0 1 2.654814 26.737777l-167.632592 203.662223c-3.982222 4.171852-9.291852 6.637037-14.791111 6.637037z" fill="black"/>
-                    </svg>
-                </button>
-            </div>
-            <div class="summary-box" id="yesterday-summary-box"></div>
+            <h2>Yesterday</h2>
             <div class="cards" id="yesterday-cards">
                 <!-- Recording cards will be inserted here -->
             </div>
@@ -1036,6 +1130,17 @@
                             <svg aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 24 24" role="img" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
                                 <title>OpenAI icon</title>
                                 <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z"/>
+                            </svg>
+                        </button>
+                        <!-- Pin Button -->
+                        <button class="pin-button tooltip" id="pin-button" data-tooltip="Pin" aria-label="Pin Note">
+                            <!-- Outline star (unpinned) -->
+                            <svg class="pin-icon-outline" aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                            <!-- Filled star (pinned) -->
+                            <svg class="pin-icon-filled" aria-hidden="true" focusable="false" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="display: none;">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                             </svg>
                         </button>
                         <!-- Existing Copy Button with counter -->
@@ -1292,39 +1397,6 @@
             });
         }
 
-        function getSummaryFromDB(dateKey) {
-            return new Promise(async (resolve, reject) => {
-                try {
-                    const docRef = doc(db, "summaries", dateKey);
-                    const docSnap = await getDoc(docRef);
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        if (data.summary && !data.overallSummary) {
-                            resolve({ id: docSnap.id, overallSummary: data.summary, noteSummaries: [], lastNoteTime: data.lastNoteTime });
-                        } else {
-                            resolve({ id: docSnap.id, overallSummary: data.overallSummary || '', noteSummaries: data.noteSummaries || [], lastNoteTime: data.lastNoteTime });
-                        }
-                    } else {
-                        resolve(null);
-                    }
-                } catch (error) {
-                    reject(error);
-                }
-            });
-        }
-
-        function saveSummaryToDB(dateKey, overallSummary, noteSummaries, lastNoteTime) {
-            return new Promise(async (resolve, reject) => {
-                try {
-                    const docRef = doc(db, "summaries", dateKey);
-                    await setDoc(docRef, { overallSummary, noteSummaries, lastNoteTime }, { merge: true });
-                    resolve();
-                } catch (error) {
-                    reject(error);
-                }
-            });
-        }
-
         /* Generates an AI title using your preferred API */
         function generateTitle(transcript) {
             return new Promise(async (resolve) => {
@@ -1437,13 +1509,36 @@
                     if (docSnap.exists()) {
                         const data = docSnap.data();
                         const todos = data.todos || [];
-                        if (todos[todoIndex]) {
+                        if (todoIndex >= 0 && todoIndex < todos.length && todos[todoIndex]) {
                             todos[todoIndex].deletedAt = new Date().toISOString();
                             await updateDoc(docRef, { todos });
+                            console.log("Todo deleted in DB:", recordingId, "index:", todoIndex);
+                            resolve(true);
+                        } else {
+                            console.error("Todo not found at index:", todoIndex, "in recording:", recordingId);
+                            reject(new Error("Todo not found at index " + todoIndex));
                         }
+                    } else {
+                        console.error("Recording not found:", recordingId);
+                        reject(new Error("Recording not found: " + recordingId));
                     }
-                    resolve();
                 } catch (error) {
+                    console.error("Error deleting todo:", error);
+                    reject(error);
+                }
+            });
+        }
+
+        /* Update pinned status for a recording */
+        function updatePinnedInDB(recordingId, pinned) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const docRef = doc(db, "recordings", recordingId);
+                    await updateDoc(docRef, { pinned: pinned });
+                    console.log("Pinned status updated for recording:", recordingId, "pinned:", pinned);
+                    resolve(recordingId);
+                } catch (error) {
+                    console.error("Error updating pinned status:", error);
                     reject(error);
                 }
             });
@@ -1458,12 +1553,11 @@
             updateRecordingInDB,
             updateCopyCountInDB,
             generateTitle,
-            getSummaryFromDB,
-            saveSummaryToDB,
             generateTodos,
             updateTodosInDB,
             toggleTodoCompletionInDB,
-            deleteTodoInDB
+            deleteTodoInDB,
+            updatePinnedInDB
         };
 
         window.dispatchEvent(new Event('firebaseReady'));
@@ -1492,12 +1586,9 @@
         const copyButton = document.getElementById('copy-button');
         const copyCountEl = document.getElementById('copy-count');
         const chatGPTButton = document.getElementById('chatgpt-button');
+        const pinButton = document.getElementById('pin-button');
         const loadingIndicator = document.getElementById('loading-indicator');
         const loadAllButton = document.getElementById('load-all-button');
-        const todaySummaryButton = document.getElementById('today-summary-button');
-        const yesterdaySummaryButton = document.getElementById('yesterday-summary-button');
-        const todaySummaryBox = document.getElementById('today-summary-box');
-        const yesterdaySummaryBox = document.getElementById('yesterday-summary-box');
         const faviconEl = document.getElementById('favicon');
 
         // Modal Tab Elements
@@ -1518,6 +1609,10 @@
         // Action Items Section Elements
         const actionItemsSection = document.getElementById('action-items-section');
         const actionItemsList = document.getElementById('action-items-list');
+
+        // Pinned Section Elements
+        const pinnedSection = document.getElementById('pinned-section');
+        const pinnedCards = document.getElementById('pinned-cards');
 
         const baseTitle = 'ClearTranscript';
         const icons = {
@@ -1566,15 +1661,9 @@
         let recordingStartTime;
         let recordingInterval;
         let loadedWithRecordingId = false;
-        let summaries = {};
         const copyUpdateTimers = {};
         let activeModalTab = 'transcript';
         let currentModalRecording = null;
-        const summaryIconSVG = `
-            <svg class="summary-icon" viewBox="0 0 1024 1024" width="1em" height="1em" xmlns="http://www.w3.org/2000/svg">
-                <path d="M526.791111 1005.037037h-329.955555c-61.62963 0-111.691852-50.062222-111.691852-111.691852V246.518519c0-61.62963 50.062222-111.691852 111.691852-111.691852h145.066666c21.617778-57.457778 74.145185-132.740741 168.770371-132.740741 101.451852 0 147.152593 85.712593 164.598518 132.740741h132.361482c61.62963 0 111.691852 50.062222 111.691851 111.691852v376.794074c0 20.859259-17.066667 37.925926-37.925925 37.925926s-37.925926-17.066667-37.925926-37.925926V246.518519c0-19.721481-16.118519-35.84-35.84-35.84h-160.237037c-17.825185 0-33.185185-12.515556-36.977778-29.771852-0.948148-3.982222-24.082963-102.968889-99.745185-102.968889-80.213333 0-103.537778 101.831111-103.727408 102.968889a37.736296 37.736296 0 0 1-36.977778 29.771852h-173.131851c-19.721481 0-35.84 16.118519-35.84 35.84v646.637037c0 19.721481 16.118519 35.84 35.84 35.84h329.955555c20.859259 0 37.925926 17.066667 37.925926 37.925925s-17.066667 38.115556-37.925926 38.115556z" fill="black"/>
-                <path d="M545.754074 211.057778h-76.420741c-10.24 0-18.773333-8.343704-18.773333-18.773334v-0.568888c0-10.24 8.343704-18.773333 18.773333-18.773334h76.420741c10.24 0 18.773333 8.343704 18.773333 18.773334v0.568888c0 10.24-8.533333 18.773333-18.773333 18.773334zM754.346667 387.602963H260.740741c-10.24 0-18.773333-8.343704-18.773334-18.773333v-0.568889c0-10.24 8.343704-18.773333 18.773334-18.773334h493.605926c10.24 0 18.773333 8.343704 18.773333 18.773334v0.568889c0 10.42963-8.533333 18.773333-18.773333 18.773333zM754.346667 564.337778H260.740741c-10.24 0-18.773333-8.343704-18.773334-18.773334v-0.568888c0-10.24 8.343704-18.773333 18.773334-18.773334h493.605926c10.24 0 18.773333 8.343704 18.773333 18.773334v0.568888c0 10.42963-8.533333 18.773333-18.773333 18.773334zM521.481481 741.072593H255.620741c-10.24 0-18.773333-8.343704-18.773334-18.773334v-0.568889c0-10.24 8.343704-18.773333 18.773334-18.773333H521.481481c10.24 0 18.773333 8.343704 18.773334 18.773333v0.568889c0 10.24-8.343704 18.773333-18.773334 18.773334zM769.137778 987.780741c-3.982222 0-8.154074-1.327407-11.567408-3.982222l-104.485926-80.213334a18.811259 18.811259 0 0 1-3.413333-26.548148c6.447407-8.343704 18.204444-9.860741 26.548148-3.413333l89.884445 69.214815 156.065185-189.44a18.962963 18.962963 0 0 1 26.737778-2.654815 18.962963 18.962963 0 0 1 2.654814 26.737777l-167.632592 203.662223c-3.982222 4.171852-9.291852 6.637037-14.791111 6.637037z" fill="black"/>
-            </svg>`;
 
         function scheduleCopyCountUpdate(recording) {
             if (!recording.id) return;
@@ -1616,8 +1705,11 @@
         function renderModalTodos(recording) {
             currentModalRecording = recording;
 
-            // Get non-deleted todos
-            const todos = (recording.todos || []).filter(todo => !todo.deletedAt);
+            // Get non-deleted todos with their original indices
+            const todosWithIndices = (recording.todos || [])
+                .map((todo, originalIndex) => ({ todo, originalIndex }))
+                .filter(item => !item.todo.deletedAt);
+            const todos = todosWithIndices.map(item => item.todo);
             const incompleteTodos = todos.filter(todo => !todo.completed);
 
             // Update count badge
@@ -1675,20 +1767,20 @@
             todosEmpty.style.display = 'none';
             todosList.style.display = 'block';
 
-            // Render todo items
-            todosList.innerHTML = todos.map((todo, index) => `
-                <li class="todo-item ${todo.completed ? 'todo-item--completed' : ''}" data-index="${index}">
-                    <div class="todo-checkbox ${todo.completed ? 'todo-checkbox--checked' : ''}" data-index="${index}">
+            // Render todo items using original indices
+            todosList.innerHTML = todosWithIndices.map(({ todo, originalIndex }) => `
+                <li class="todo-item ${todo.completed ? 'todo-item--completed' : ''}" data-index="${originalIndex}">
+                    <div class="todo-checkbox ${todo.completed ? 'todo-checkbox--checked' : ''}" data-index="${originalIndex}">
                         <svg viewBox="0 0 16 16" fill="currentColor">
                             <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
                         </svg>
                     </div>
                     <div class="todo-content">
                         <div class="todo-text">${escapeHtml(todo.text)}</div>
-                        <div class="todo-citation" data-index="${index}">${escapeHtml(todo.citation)}</div>
+                        <div class="todo-citation" data-index="${originalIndex}">${escapeHtml(todo.citation)}</div>
                     </div>
                     <div class="todo-actions">
-                        <button class="todo-delete-btn" data-index="${index}" title="Delete">
+                        <button class="todo-delete-btn" data-index="${originalIndex}" title="Delete">
                             <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
                                 <path d="M11 1.75V3h2.25a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1 0-1.5H5V1.75C5 .784 5.784 0 6.75 0h2.5C10.216 0 11 .784 11 1.75ZM4.496 6.675l.66 6.6a.25.25 0 0 0 .249.225h5.19a.25.25 0 0 0 .249-.225l.66-6.6a.75.75 0 0 1 1.492.149l-.66 6.6A1.748 1.748 0 0 1 10.595 15h-5.19a1.75 1.75 0 0 1-1.741-1.575l-.66-6.6a.75.75 0 1 1 1.492-.15ZM6.5 1.75V3h3V1.75a.25.25 0 0 0-.25-.25h-2.5a.25.25 0 0 0-.25.25Z"></path>
                             </svg>
@@ -1744,7 +1836,13 @@
             const index = parseInt(e.currentTarget.dataset.index);
             const recording = currentModalRecording;
 
-            if (!recording || !recording.todos[index]) return;
+            if (!recording || !recording.todos || !recording.todos[index]) {
+                console.error('Cannot delete: recording or todo not found at index', index);
+                return;
+            }
+
+            // Store previous state for potential revert
+            const previousDeletedAt = recording.todos[index].deletedAt;
 
             // Soft delete
             recording.todos[index].deletedAt = new Date().toISOString();
@@ -1755,7 +1853,15 @@
 
             // Persist to database
             if (recording.id) {
-                await window.app.deleteTodoInDB(recording.id, index);
+                try {
+                    await window.app.deleteTodoInDB(recording.id, index);
+                } catch (error) {
+                    console.error('Error deleting todo from database:', error);
+                    // Revert local state on error
+                    recording.todos[index].deletedAt = previousDeletedAt;
+                    renderModalTodos(recording);
+                    renderRecordings();
+                }
             }
         }
 
@@ -1853,12 +1959,6 @@
                 // Load only recent recordings (today and yesterday)
                 const recentRecordings = await window.app.getRecordingsFromDB();
                 loadRecordings(recentRecordings);
-
-                const todayKey = getDateKey(new Date());
-                const yesterdayKey = getDateKey(new Date(Date.now() - 86400000));
-                summaries[todayKey] = await window.app.getSummaryFromDB(todayKey);
-                summaries[yesterdayKey] = await window.app.getSummaryFromDB(yesterdayKey);
-
                 renderRecordings();
                 loadAllButton.style.display = 'block';
             }
@@ -2188,7 +2288,13 @@
                     const todoIndex = parseInt(e.currentTarget.dataset.todoIndex);
                     const recording = recordings[recordingIndex];
 
-                    if (!recording || !recording.todos[todoIndex]) return;
+                    if (!recording || !recording.todos || !recording.todos[todoIndex]) {
+                        console.error('Cannot toggle: recording or todo not found', recordingIndex, todoIndex);
+                        return;
+                    }
+
+                    // Store previous state for potential revert
+                    const previousCompleted = recording.todos[todoIndex].completed;
 
                     recording.todos[todoIndex].completed = true;
 
@@ -2203,7 +2309,18 @@
 
                     // Persist
                     if (recording.id) {
-                        await window.app.toggleTodoCompletionInDB(recording.id, todoIndex, true);
+                        try {
+                            await window.app.toggleTodoCompletionInDB(recording.id, todoIndex, true);
+                        } catch (error) {
+                            console.error('Error toggling todo completion:', error);
+                            // Revert local state on error
+                            recording.todos[todoIndex].completed = previousCompleted;
+                            renderActionItemsSection();
+                            renderRecordings();
+                            if (currentModalRecording === recording) {
+                                renderModalTodos(recording);
+                            }
+                        }
                     }
                 });
             });
@@ -2230,8 +2347,15 @@
                     const todoIndex = parseInt(e.currentTarget.dataset.todoIndex);
                     const recording = recordings[recordingIndex];
 
-                    if (!recording || !recording.todos[todoIndex]) return;
+                    if (!recording || !recording.todos || !recording.todos[todoIndex]) {
+                        console.error('Cannot delete: recording or todo not found', recordingIndex, todoIndex);
+                        return;
+                    }
 
+                    // Store previous state for potential revert
+                    const previousDeletedAt = recording.todos[todoIndex].deletedAt;
+
+                    // Update local state
                     recording.todos[todoIndex].deletedAt = new Date().toISOString();
 
                     // Update UI
@@ -2243,10 +2367,89 @@
                         renderModalTodos(recording);
                     }
 
-                    // Persist
+                    // Persist to database
                     if (recording.id) {
-                        await window.app.deleteTodoInDB(recording.id, todoIndex);
+                        try {
+                            await window.app.deleteTodoInDB(recording.id, todoIndex);
+                        } catch (error) {
+                            console.error('Error deleting todo from database:', error);
+                            // Revert local state on error
+                            recording.todos[todoIndex].deletedAt = previousDeletedAt;
+                            renderActionItemsSection();
+                            renderRecordings();
+                            if (currentModalRecording === recording) {
+                                renderModalTodos(recording);
+                            }
+                        }
                     }
+                });
+            });
+        }
+
+        // Render the pinned section
+        function renderPinnedSection(pinnedRecordings) {
+            // Show/hide section based on whether there are pinned items
+            if (!pinnedRecordings || pinnedRecordings.length === 0) {
+                pinnedSection.classList.add('section--hidden');
+                return;
+            }
+
+            pinnedSection.classList.remove('section--hidden');
+
+            // Render pinned cards
+            pinnedCards.innerHTML = pinnedRecordings.map(({ rec, index }) => {
+                const date = rec.date && rec.date.seconds
+                    ? new Date(rec.date.seconds * 1000)
+                    : new Date(rec.date);
+
+                return `
+                    <div class="pinned-card" data-index="${index}">
+                        <div class="flex-container flex-container--spaceBetween">
+                            <h3>${escapeHtml(rec.title)}</h3>
+                            <button class="pinned-card-copy tooltip" data-index="${index}" data-tooltip="Copy" aria-label="Copy content">
+                                <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+                                    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path>
+                                    <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
+                                </svg>
+                                <svg viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+                                    <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <p>${rec.transcript.length > 280 ? rec.transcript.substring(0, 280) + '...' : rec.transcript}</p>
+                        <span class="pinned-card-time">${formatDate(rec.date)}</span>
+                    </div>
+                `;
+            }).join('');
+
+            // Add event listeners
+
+            // Card click - open modal
+            pinnedCards.querySelectorAll('.pinned-card').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    // Don't open modal if clicking copy button
+                    if (e.target.closest('.pinned-card-copy')) {
+                        return;
+                    }
+                    const recordingIndex = parseInt(card.dataset.index);
+                    openModal(recordingIndex);
+                });
+            });
+
+            // Copy button click
+            pinnedCards.querySelectorAll('.pinned-card-copy').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const recordingIndex = parseInt(e.currentTarget.dataset.index);
+                    const recording = recordings[recordingIndex];
+
+                    if (!recording) return;
+
+                    navigator.clipboard.writeText(recording.transcript).then(() => {
+                        btn.classList.add('copied');
+                        setTimeout(() => btn.classList.remove('copied'), 2500);
+                        incrementCopyCount(recording);
+                    });
                 });
             });
         }
@@ -2266,17 +2469,21 @@
 
             // Group recordings by section
             const sections = {
+                pinned: [],
                 today: [],
                 yesterday: [],
                 all: []
             };
 
             recordings.forEach((rec, index) => {
-                const recDate = rec.date && rec.date.seconds 
-                    ? new Date(rec.date.seconds * 1000) 
+                const recDate = rec.date && rec.date.seconds
+                    ? new Date(rec.date.seconds * 1000)
                     : new Date(rec.date);
 
-                if (recDate >= today) {
+                // If pinned, add to pinned section instead of time-based sections
+                if (rec.pinned) {
+                    sections.pinned.push({ rec, index });
+                } else if (recDate >= today) {
                     sections.today.push({ rec, index });
                 } else if (recDate >= yesterday && recDate < today) {
                     sections.yesterday.push({ rec, index });
@@ -2297,18 +2504,18 @@
 
                 card.innerHTML = `
                     <div class="flex-container flex-container--spaceBetween">
-                        <h3>${rec.title}</h3>
-                        <button class="copy-card-button copy-button" data-tooltip="Copy" aria-label="Copy content">
-                            <svg aria-hidden="true" focusable="false" class="copy-button-copy" viewBox="0 0 16 16" width="16" height="16" fill="#000">
+                        <h3>${escapeHtml(rec.title)}</h3>
+                        <button class="copy-card-button tooltip" data-tooltip="Copy" aria-label="Copy content">
+                            <svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
                                 <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path>
                                 <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path>
                             </svg>
-                            <svg aria-hidden="true" focusable="false" class="copy-button-check" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
+                            <svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" width="16" height="16" fill="currentColor">
                                 <path d="M13.78 4.22a.75.75 0 0 1 0 1.06l-7.25 7.25a.75.75 0 0 1-1.06 0L2.22 9.28a.751.751 0 0 1 .018-1.042.751.751 0 0 1 1.042-.018L6 10.94l6.72-6.72a.75.75 0 0 1 1.06 0Z"></path>
                             </svg>
                         </button>
                     </div>
-                    <p>${rec.transcript.length > 292 ? rec.transcript.substring(0, 292) + '...' : rec.transcript}</p>
+                    <p>${rec.transcript.length > 280 ? rec.transcript.substring(0, 280) + '...' : rec.transcript}</p>
                     <span class="card-time">${formatTime(recDate)}</span>
                 `;
 
@@ -2323,7 +2530,7 @@
                 });
 
                 card.addEventListener('click', (event) => {
-                    if (!event.target.classList.contains('copy-card-button')) {
+                    if (!event.target.closest('.copy-card-button')) {
                         openModal(index);
                     }
                 });
@@ -2347,54 +2554,21 @@
 
             // Update each section
 
+            // Render pinned section
+            renderPinnedSection(sections.pinned);
+
             if (sections.today.length > 0) {
                 updateSection(todayCards, sections.today);
                 todayCards.closest('.section').classList.remove('section--hidden');
-                const latestToday = sections.today[0].rec.date;
-                const todayKey = getDateKey(latestToday);
-                const todaySummary = summaries[todayKey];
-                if (todaySummary && (todaySummary.overallSummary || todaySummary.summary)) {
-                    const mainText = todaySummary.overallSummary || todaySummary.summary;
-                    const notesArr = Array.isArray(todaySummary.noteSummaries) ? todaySummary.noteSummaries : [];
-                    renderSummaryContent(todaySummaryBox, mainText, notesArr);
-                    if (new Date(latestToday) <= new Date(todaySummary.lastNoteTime)) {
-                        todaySummaryButton.style.display = 'none';
-                    } else {
-                        todaySummaryButton.style.display = 'inline-block';
-                    }
-                } else {
-                    todaySummaryBox.style.display = 'none';
-                    todaySummaryButton.style.display = 'inline-block';
-                }
             } else {
                 todayCards.closest('.section').classList.add('section--hidden');
-                todaySummaryBox.style.display = 'none';
-                todaySummaryButton.style.display = 'none';
             }
 
             if (sections.yesterday.length > 0) {
                 updateSection(yesterdayCards, sections.yesterday);
                 yesterdayCards.closest('.section').classList.remove('section--hidden');
-                const latestYest = sections.yesterday[0].rec.date;
-                const yestKey = getDateKey(latestYest);
-                const yestSummary = summaries[yestKey];
-                if (yestSummary && (yestSummary.overallSummary || yestSummary.summary)) {
-                    const mainText = yestSummary.overallSummary || yestSummary.summary;
-                    const notesArr = Array.isArray(yestSummary.noteSummaries) ? yestSummary.noteSummaries : [];
-                    renderSummaryContent(yesterdaySummaryBox, mainText, notesArr);
-                    if (new Date(latestYest) <= new Date(yestSummary.lastNoteTime)) {
-                        yesterdaySummaryButton.style.display = 'none';
-                    } else {
-                        yesterdaySummaryButton.style.display = 'inline-block';
-                    }
-                } else {
-                    yesterdaySummaryBox.style.display = 'none';
-                    yesterdaySummaryButton.style.display = 'inline-block';
-                }
             } else {
                 yesterdayCards.closest('.section').classList.add('section--hidden');
-                yesterdaySummaryBox.style.display = 'none';
-                yesterdaySummaryButton.style.display = 'none';
             }
 
             if (sections.all.length > 0) {
@@ -2416,38 +2590,6 @@
             return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
         }
 
-        function getDateKey(date) {
-            let d;
-            if (date && date.seconds) {
-                d = new Date(date.seconds * 1000);
-            } else {
-                d = new Date(date);
-            }
-            return d.toISOString().split('T')[0];
-        }
-
-        function renderSummaryContent(box, overallSummary, noteSummaries) {
-            box.innerHTML = '';
-            const p = document.createElement('p');
-            p.textContent = overallSummary;
-            box.appendChild(p);
-            if (Array.isArray(noteSummaries) && noteSummaries.length > 0) {
-                const list = document.createElement('ol');
-                noteSummaries.forEach(ns => {
-                    const li = document.createElement('li');
-                    const a = document.createElement('a');
-                    a.href = `?id=${ns.id}`;
-                    a.dataset.id = ns.id;
-                    a.classList.add('note-link');
-                    a.textContent = ns.summary;
-                    li.appendChild(a);
-                    list.appendChild(li);
-                });
-                box.appendChild(list);
-            }
-            box.style.display = 'block';
-        }
-
         function openModal(index, { updateURL = true } = {}) {
             const rec = recordings[index];
             if (!rec) return;
@@ -2462,6 +2604,9 @@
             copyCountEl.textContent = rec.copyCount || 0;
             modal.style.display = 'flex';
 
+            // Update pin button state
+            updatePinButtonState(rec.pinned);
+
             // Reset to transcript tab
             switchModalTab('transcript');
 
@@ -2473,6 +2618,26 @@
                 const url = new URL(window.location);
                 url.searchParams.set('id', rec.id);
                 window.history.pushState({}, '', url);
+            }
+        }
+
+        // Update pin button visual state
+        function updatePinButtonState(isPinned) {
+            const outlineIcon = pinButton.querySelector('.pin-icon-outline');
+            const filledIcon = pinButton.querySelector('.pin-icon-filled');
+
+            if (isPinned) {
+                pinButton.classList.add('pin-button--active');
+                pinButton.setAttribute('data-tooltip', 'Unpin');
+                pinButton.setAttribute('aria-label', 'Unpin');
+                outlineIcon.style.display = 'none';
+                filledIcon.style.display = 'block';
+            } else {
+                pinButton.classList.remove('pin-button--active');
+                pinButton.setAttribute('data-tooltip', 'Pin');
+                pinButton.setAttribute('aria-label', 'Pin');
+                outlineIcon.style.display = 'block';
+                filledIcon.style.display = 'none';
             }
         }
 
@@ -2498,7 +2663,9 @@
         // Drag and Drop Handlers
         uploadArea.addEventListener('dragover', (e) => {
             e.preventDefault();
-            uploadArea.classList.add('dragover');
+            if (!isRecording) {
+                uploadArea.classList.add('dragover');
+            }
         });
 
         uploadArea.addEventListener('dragleave', () => {
@@ -2508,15 +2675,17 @@
         uploadArea.addEventListener('drop', (e) => {
             e.preventDefault();
             uploadArea.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            handleFiles(files);
+            if (!isRecording) {
+                const files = e.dataTransfer.files;
+                handleFiles(files);
+            }
         });
 
         // Click to Upload
         // Removed event listener that opens file input dialog on click to prevent interference with record button.
         uploadArea.addEventListener('click', (e) => {
-            // Prevent opening file dialog when clicking the record button
-            if (e.target !== recordButton && !recordButton.contains(e.target)) {
+            // Prevent opening file dialog when clicking the record button or when recording
+            if (e.target !== recordButton && !recordButton.contains(e.target) && !isRecording) {
                 fileInput.click();
             }
         });
@@ -2586,6 +2755,7 @@
                 isRecording = true;
                 recordingStartTime = Date.now();
                 recordButton.classList.add('recording');
+                uploadArea.classList.add('recording');
                 recordButton.innerHTML = '<div class="recording-indicator"></div> 0:00';
                 recordedChunks = [];
 
@@ -2629,43 +2799,10 @@
             isRecording = false;
             clearInterval(recordingInterval);
             recordButton.classList.remove('recording');
+            uploadArea.classList.remove('recording');
             recordButton.textContent = 'Record';
             releaseWakeLock();  // Release Wake Lock when recording stops
             stopRecordingBlink();
-        }
-
-        async function handleSummaryClick(section) {
-            const button = section === 'today' ? todaySummaryButton : yesterdaySummaryButton;
-            const box = section === 'today' ? todaySummaryBox : yesterdaySummaryBox;
-            const dateKey = section === 'today' ? getDateKey(new Date()) : getDateKey(new Date(Date.now() - 86400000));
-            const sectionRecs = recordings.filter(r => getDateKey(r.date) === dateKey);
-            if (sectionRecs.length === 0) return;
-
-            button.innerHTML = '<div class="summary-spinner"></div>';
-            button.disabled = true;
-            try {
-                const payload = sectionRecs.map(r => ({ id: r.id, title: r.title, transcript: r.transcript, date: r.date }));
-                const response = await fetch('https://cleartranscript-api.deno.dev/summary', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Origin': window.location.origin
-                    },
-                    body: JSON.stringify({ recordings: payload })
-                });
-                const data = await response.json();
-                const overallSummary = data.overallSummary || data.summary || '';
-                const noteSummaries = Array.isArray(data.noteSummaries) ? data.noteSummaries : [];
-                renderSummaryContent(box, overallSummary, noteSummaries);
-                summaries[dateKey] = { overallSummary, noteSummaries, lastNoteTime: sectionRecs[0].date };
-                await window.app.saveSummaryToDB(dateKey, overallSummary, noteSummaries, sectionRecs[0].date);
-                button.style.display = 'none';
-            } catch (err) {
-                console.error('Error generating summary:', err);
-            } finally {
-                button.disabled = false;
-                button.innerHTML = summaryIconSVG;
-            }
         }
 
         // Modal Handlers
@@ -2712,6 +2849,38 @@
             }
         });
 
+        // Modal Pin button
+        pinButton.addEventListener('click', async () => {
+            const index = parseInt(modal.dataset.index);
+            const recordingId = modal.dataset.recordingId;
+            const rec = recordings[index];
+
+            if (!rec) return;
+
+            // Toggle pinned state
+            const newPinnedState = !rec.pinned;
+            rec.pinned = newPinnedState;
+
+            // Update button state immediately
+            updatePinButtonState(newPinnedState);
+
+            // Re-render the recordings to move the card
+            renderRecordings();
+
+            // Persist to database
+            if (recordingId) {
+                try {
+                    await window.app.updatePinnedInDB(recordingId, newPinnedState);
+                } catch (error) {
+                    console.error('Error updating pinned status:', error);
+                    // Revert on error
+                    rec.pinned = !newPinnedState;
+                    updatePinButtonState(!newPinnedState);
+                    renderRecordings();
+                }
+            }
+        });
+
         // Load all recordings on demand
         loadAllButton.addEventListener('click', async () => {
             loadAllButton.disabled = true;
@@ -2720,9 +2889,6 @@
             loadRecordings(allRecordings);
             loadAllButton.style.display = 'none';
         });
-
-        todaySummaryButton.addEventListener('click', () => handleSummaryClick('today'));
-        yesterdaySummaryButton.addEventListener('click', () => handleSummaryClick('yesterday'));
 
         // Enable Title Editing event listener
         document.querySelector('.js-editable').addEventListener('click', editTitle);
